@@ -1,0 +1,4305 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KEI Industries — Execution Sales Dashboard</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    :root {
+      --navy: #0a1628;
+      --navy2: #0f2044;
+      --blue: #1a6fff;
+      --blue2: #2d8bff;
+      --blue-light: #e8f1ff;
+      --accent: #00d4aa;
+      --accent2: #ff6b35;
+      --danger: #ff4757;
+      --warn: #ffa502;
+      --success: #2ed573;
+      --sidebar-w: 260px;
+      --bg: #0d1b2a;
+      --bg2: #0f2035;
+      --bg3: #162540;
+      --card: #152233;
+      --card2: #1a2d45;
+      --border: rgba(26, 111, 255, 0.15);
+      --border2: rgba(255, 255, 255, 0.06);
+      --txt: #e8f0fe;
+      --txt2: #8ba3c7;
+      --txt3: #5a7499;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --shadow2: 0 2px 12px rgba(0, 0, 0, 0.3);
+      --radius: 14px;
+      --radius2: 10px;
+      --radius3: 8px;
+      --glass: rgba(21, 34, 51, 0.8);
+      --glass2: rgba(15, 32, 52, 0.9);
+      --grad1: linear-gradient(135deg, #1a6fff, #00d4aa);
+      --grad2: linear-gradient(135deg, #ff6b35, #ffa502);
+      --grad3: linear-gradient(135deg, #8b5cf6, #3b82f6);
+      --grad4: linear-gradient(135deg, #2ed573, #00d4aa);
+      --grad5: linear-gradient(135deg, #ff4757, #ff6b35);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --bg2: #e8eeff;
+      --bg3: #dde6ff;
+      --card: #ffffff;
+      --card2: #f8faff;
+      --border: rgba(26, 111, 255, 0.12);
+      --border2: rgba(0, 0, 0, 0.06);
+      --txt: #0a1628;
+      --txt2: #4a6080;
+      --txt3: #8ba3c7;
+      --shadow: 0 8px 32px rgba(10, 22, 40, 0.1);
+      --shadow2: 0 2px 12px rgba(10, 22, 40, 0.08);
+      --glass: rgba(255, 255, 255, 0.85);
+      --glass2: rgba(248, 250, 255, 0.92);
+      --navy: #0a1628;
+      --navy2: #0f2044;
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--txt);
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background .3s, color .3s
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(26, 111, 255, 0.06) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0, 212, 170, 0.04) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--glass2);
+      backdrop-filter: blur(24px);
+      border-right: 1px solid var(--border);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      transition: transform .3s ease, width .3s ease;
+      overflow: hidden
+    }
+
+    .sidebar-logo {
+      padding: 24px 20px 16px;
+      border-bottom: 1px solid var(--border2);
+      flex-shrink: 0
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--grad1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      font-family: 'Space Grotesk', sans-serif
+    }
+
+    .logo-text h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--txt);
+      line-height: 1.2
+    }
+
+    .logo-text p {
+      font-size: 10px;
+      color: var(--txt3);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-top: 2px
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 10px;
+      scrollbar-width: none
+    }
+
+    .sidebar-nav::-webkit-scrollbar {
+      display: none
+    }
+
+    .nav-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--txt3);
+      padding: 8px 10px 6px;
+      margin-top: 8px
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 12px;
+      border-radius: var(--radius3);
+      cursor: pointer;
+      transition: all .2s;
+      color: var(--txt2);
+      font-size: 13.5px;
+      font-weight: 500;
+      position: relative;
+      margin-bottom: 2px
+    }
+
+    .nav-item:hover {
+      background: var(--border);
+      color: var(--txt)
+    }
+
+    .nav-item.active {
+      background: linear-gradient(90deg, rgba(26, 111, 255, 0.2), rgba(26, 111, 255, 0.05));
+      color: var(--blue2);
+      border-left: 3px solid var(--blue)
+    }
+
+    .nav-item.active .nav-icon {
+      color: var(--blue2)
+    }
+
+    .nav-icon {
+      font-size: 17px;
+      width: 22px;
+      text-align: center;
+      flex-shrink: 0
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--danger);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      min-width: 20px;
+      text-align: center
+    }
+
+    .nav-badge.warn {
+      background: var(--warn)
+    }
+
+    .nav-badge.success {
+      background: var(--success)
+    }
+
+    .sidebar-bottom {
+      padding: 14px 10px;
+      border-top: 1px solid var(--border2);
+      flex-shrink: 0
+    }
+
+    .theme-toggle-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius3);
+      cursor: pointer;
+      background: var(--border);
+      color: var(--txt2);
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      width: 100%;
+      transition: all .2s
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--border2);
+      color: var(--txt)
+    }
+
+    /* MAIN */
+    .main {
+      margin-left: var(--sidebar-w);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+      transition: margin-left .3s
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      background: var(--glass2);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px
+    }
+
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--txt2);
+      font-size: 22px;
+      cursor: pointer;
+      padding: 6px
+    }
+
+    .page-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--txt)
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .topbar-date {
+      font-size: 12px;
+      color: var(--txt3);
+      background: var(--border);
+      padding: 6px 12px;
+      border-radius: 20px;
+      white-space: nowrap
+    }
+
+    .topbar-btn {
+      background: var(--border);
+      border: 1px solid var(--border2);
+      color: var(--txt2);
+      padding: 8px 14px;
+      border-radius: var(--radius3);
+      cursor: pointer;
+      font-size: 12.5px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .2s;
+      font-family: 'DM Sans', sans-serif
+    }
+
+    .topbar-btn:hover {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue)
+    }
+
+    .topbar-btn.primary {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue)
+    }
+
+    .topbar-btn.primary:hover {
+      background: var(--blue2)
+    }
+
+    .notif-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--danger);
+      border-radius: 50%;
+      position: absolute;
+      top: 6px;
+      right: 6px
+    }
+
+    /* CONTENT */
+    .content {
+      padding: 24px 28px;
+      flex: 1
+    }
+
+    .page {
+      display: none
+    }
+
+    .page.active {
+      display: block
+    }
+
+    /* KPI CARDS */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px
+    }
+
+    .kpi-card {
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      transition: transform .2s, box-shadow .2s;
+      animation: fadeUp .5s ease both
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow)
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      opacity: .08
+    }
+
+    .kpi-card.blue::before {
+      background: var(--blue)
+    }
+
+    .kpi-card.teal::before {
+      background: var(--accent)
+    }
+
+    .kpi-card.orange::before {
+      background: var(--accent2)
+    }
+
+    .kpi-card.red::before {
+      background: var(--danger)
+    }
+
+    .kpi-card.purple::before {
+      background: #8b5cf6
+    }
+
+    .kpi-card.green::before {
+      background: var(--success)
+    }
+
+    .kpi-card.yellow::before {
+      background: var(--warn)
+    }
+
+    .kpi-card.indigo::before {
+      background: #6366f1
+    }
+
+    .kpi-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 14px
+    }
+
+    .kpi-card.blue .kpi-icon {
+      background: rgba(26, 111, 255, .15);
+      color: var(--blue2)
+    }
+
+    .kpi-card.teal .kpi-icon {
+      background: rgba(0, 212, 170, .15);
+      color: var(--accent)
+    }
+
+    .kpi-card.orange .kpi-icon {
+      background: rgba(255, 107, 53, .15);
+      color: var(--accent2)
+    }
+
+    .kpi-card.red .kpi-icon {
+      background: rgba(255, 71, 87, .15);
+      color: var(--danger)
+    }
+
+    .kpi-card.purple .kpi-icon {
+      background: rgba(139, 92, 246, .15);
+      color: #8b5cf6
+    }
+
+    .kpi-card.green .kpi-icon {
+      background: rgba(46, 213, 115, .15);
+      color: var(--success)
+    }
+
+    .kpi-card.yellow .kpi-icon {
+      background: rgba(255, 165, 2, .15);
+      color: var(--warn)
+    }
+
+    .kpi-card.indigo .kpi-icon {
+      background: rgba(99, 102, 241, .15);
+      color: #6366f1
+    }
+
+    .kpi-val {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 6px;
+      color: var(--txt)
+    }
+
+    .kpi-label {
+      font-size: 12.5px;
+      color: var(--txt3);
+      font-weight: 500
+    }
+
+    .kpi-trend {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px
+    }
+
+    .kpi-trend.up {
+      background: rgba(46, 213, 115, .15);
+      color: var(--success)
+    }
+
+    .kpi-trend.down {
+      background: rgba(255, 71, 87, .15);
+      color: var(--danger)
+    }
+
+    .kpi-trend.neutral {
+      background: var(--border);
+      color: var(--txt3)
+    }
+
+    /* CHARTS */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 24px
+    }
+
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 20px;
+      animation: fadeUp .6s ease both
+    }
+
+    .chart-card.wide {
+      grid-column: span 2
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px
+    }
+
+    .chart-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--txt)
+    }
+
+    .chart-subtitle {
+      font-size: 11.5px;
+      color: var(--txt3);
+      margin-top: 2px
+    }
+
+    .chart-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--border);
+      color: var(--txt2);
+      font-weight: 500
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 220px
+    }
+
+    .chart-wrap.tall {
+      height: 260px
+    }
+
+    /* SECTION HEADERS */
+    .section-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--txt);
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .section-title .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--blue);
+      display: inline-block
+    }
+
+    /* FORM */
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px
+    }
+
+    .form-group.full {
+      grid-column: span 3
+    }
+
+    .form-group.half {
+      grid-column: span 1
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--txt2);
+      letter-spacing: .3px;
+      text-transform: uppercase
+    }
+
+    input,
+    select,
+    textarea {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius3);
+      padding: 10px 12px;
+      color: var(--txt);
+      font-size: 13.5px;
+      font-family: 'DM Sans', sans-serif;
+      transition: border .2s, box-shadow .2s;
+      outline: none
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(26, 111, 255, .12)
+    }
+
+    select option {
+      background: var(--bg2)
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px
+    }
+
+    input::placeholder {
+      color: var(--txt3)
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: var(--radius3);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all .2s
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: #fff
+    }
+
+    .btn-primary:hover {
+      background: var(--blue2);
+      transform: translateY(-1px)
+    }
+
+    .btn-secondary {
+      background: var(--border);
+      color: var(--txt2)
+    }
+
+    .btn-secondary:hover {
+      background: var(--border2);
+      color: var(--txt)
+    }
+
+    .btn-success {
+      background: rgba(46, 213, 115, .2);
+      color: var(--success);
+      border: 1px solid rgba(46, 213, 115, .3)
+    }
+
+    .btn-success:hover {
+      background: var(--success);
+      color: #fff
+    }
+
+    .btn-danger {
+      background: rgba(255, 71, 87, .2);
+      color: var(--danger);
+      border: 1px solid rgba(255, 71, 87, .3)
+    }
+
+    .btn-danger:hover {
+      background: var(--danger);
+      color: #fff
+    }
+
+    .btn-warn {
+      background: rgba(255, 165, 2, .2);
+      color: var(--warn);
+      border: 1px solid rgba(255, 165, 2, .3)
+    }
+
+    .btn-warn:hover {
+      background: var(--warn);
+      color: #fff
+    }
+
+    .btn-export {
+      background: var(--grad4);
+      color: #fff
+    }
+
+    .btn-export:hover {
+      opacity: .9
+    }
+
+    /* TABLE */
+    .table-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px
+    }
+
+    .search-wrap input {
+      width: 100%;
+      padding-left: 36px
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--txt3);
+      font-size: 14px
+    }
+
+    .filter-select {
+      min-width: 130px
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius2);
+      border: 1px solid var(--border2)
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px
+    }
+
+    thead {
+      background: var(--bg3)
+    }
+
+    thead th {
+      padding: 11px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      color: var(--txt3);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      position: relative
+    }
+
+    thead th:hover {
+      color: var(--txt2)
+    }
+
+    thead th .sort-arrow {
+      margin-left: 4px;
+      opacity: .5
+    }
+
+    tbody tr {
+      border-top: 1px solid var(--border2);
+      transition: background .15s
+    }
+
+    tbody tr:hover {
+      background: var(--border)
+    }
+
+    tbody td {
+      padding: 11px 14px;
+      color: var(--txt);
+      vertical-align: middle
+    }
+
+    tbody tr.delayed-row {
+      background: rgba(255, 71, 87, .05)
+    }
+
+    tbody tr.delayed-row:hover {
+      background: rgba(255, 71, 87, .1)
+    }
+
+    tbody tr.urgent-row {
+      background: rgba(255, 165, 2, .05)
+    }
+
+    tbody tr.urgent-row:hover {
+      background: rgba(255, 165, 2, .08)
+    }
+
+    .td-actions {
+      display: flex;
+      gap: 6px
+    }
+
+    .act-btn {
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      transition: all .15s
+    }
+
+    .act-btn.edit {
+      background: rgba(26, 111, 255, .15);
+      color: var(--blue2)
+    }
+
+    .act-btn.edit:hover {
+      background: var(--blue);
+      color: #fff
+    }
+
+    .act-btn.del {
+      background: rgba(255, 71, 87, .15);
+      color: var(--danger)
+    }
+
+    .act-btn.del:hover {
+      background: var(--danger);
+      color: #fff
+    }
+
+    /* BADGES */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+      white-space: nowrap;
+      letter-spacing: .2px
+    }
+
+    .badge::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: currentColor
+    }
+
+    .badge-pending {
+      background: rgba(255, 165, 2, .15);
+      color: var(--warn)
+    }
+
+    .badge-completed {
+      background: rgba(46, 213, 115, .15);
+      color: var(--success)
+    }
+
+    .badge-delayed {
+      background: rgba(255, 71, 87, .15);
+      color: var(--danger)
+    }
+
+    .badge-urgent {
+      background: rgba(255, 107, 53, .15);
+      color: var(--accent2)
+    }
+
+    .badge-progress {
+      background: rgba(26, 111, 255, .15);
+      color: var(--blue2)
+    }
+
+    .badge-escalated {
+      background: rgba(139, 92, 246, .15);
+      color: #8b5cf6
+    }
+
+    .badge-hold {
+      background: rgba(90, 116, 153, .15);
+      color: var(--txt3)
+    }
+
+    .badge-partial {
+      background: rgba(0, 212, 170, .15);
+      color: var(--accent)
+    }
+
+    /* FOLLOWUP CARDS */
+    .followup-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px
+    }
+
+    .fu-card {
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius2);
+      padding: 16px;
+      transition: all .2s
+    }
+
+    .fu-card:hover {
+      border-color: var(--border);
+      transform: translateY(-2px)
+    }
+
+    .fu-card-hdr {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 10px
+    }
+
+    .fu-client {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--txt)
+    }
+
+    .fu-project {
+      font-size: 12px;
+      color: var(--txt3);
+      margin-top: 2px
+    }
+
+    .fu-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--txt2)
+    }
+
+    .fu-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .fu-date {
+      font-size: 11.5px;
+      color: var(--txt3);
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border2);
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    /* ACTIVITY LOG */
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0
+    }
+
+    .activity-item {
+      display: flex;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border2);
+      position: relative;
+      animation: fadeUp .4s ease both
+    }
+
+    .activity-item:last-child {
+      border-bottom: none
+    }
+
+    .activity-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 5px;
+      position: relative
+    }
+
+    .activity-dot::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      opacity: .2
+    }
+
+    .activity-dot.blue {
+      background: var(--blue)
+    }
+
+    .activity-dot.blue::before {
+      background: var(--blue)
+    }
+
+    .activity-dot.green {
+      background: var(--success)
+    }
+
+    .activity-dot.green::before {
+      background: var(--success)
+    }
+
+    .activity-dot.orange {
+      background: var(--accent2)
+    }
+
+    .activity-dot.orange::before {
+      background: var(--accent2)
+    }
+
+    .activity-dot.red {
+      background: var(--danger)
+    }
+
+    .activity-dot.red::before {
+      background: var(--danger)
+    }
+
+    .activity-dot.teal {
+      background: var(--accent)
+    }
+
+    .activity-dot.teal::before {
+      background: var(--accent)
+    }
+
+    .activity-time {
+      font-size: 11px;
+      color: var(--txt3);
+      white-space: nowrap;
+      min-width: 70px
+    }
+
+    .activity-text {
+      font-size: 13px;
+      color: var(--txt);
+      flex: 1
+    }
+
+    .activity-text strong {
+      color: var(--blue2)
+    }
+
+    .activity-sub {
+      font-size: 11.5px;
+      color: var(--txt3);
+      margin-top: 2px
+    }
+
+    /* ANALYTICS */
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 20px
+    }
+
+    .analytic-card {
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius2);
+      padding: 18px;
+      text-align: center
+    }
+
+    .analytic-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--txt);
+      line-height: 1
+    }
+
+    .analytic-label {
+      font-size: 12px;
+      color: var(--txt3);
+      margin-top: 6px;
+      font-weight: 500
+    }
+
+    .analytic-bar-wrap {
+      margin-top: 10px;
+      background: var(--border);
+      border-radius: 20px;
+      height: 6px;
+      overflow: hidden
+    }
+
+    .analytic-bar {
+      height: 100%;
+      border-radius: 20px;
+      background: var(--grad1);
+      transition: width 1s ease
+    }
+
+    /* PROGRESS BARS */
+    .progress-section {
+      margin-bottom: 20px
+    }
+
+    .progress-item {
+      margin-bottom: 14px
+    }
+
+    .progress-hdr {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 13px
+    }
+
+    .progress-label {
+      color: var(--txt2);
+      font-weight: 500
+    }
+
+    .progress-val {
+      color: var(--txt);
+      font-weight: 700
+    }
+
+    .progress-track {
+      background: var(--border);
+      border-radius: 20px;
+      height: 8px;
+      overflow: hidden
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 20px;
+      transition: width 1.2s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    /* REMINDERS */
+    .reminder-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .reminder-item {
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-left: 3px solid var(--blue);
+      border-radius: var(--radius3);
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all .2s
+    }
+
+    .reminder-item.warn {
+      border-left-color: var(--warn)
+    }
+
+    .reminder-item.danger {
+      border-left-color: var(--danger)
+    }
+
+    .reminder-item.success {
+      border-left-color: var(--success)
+    }
+
+    .reminder-item:hover {
+      transform: translateX(3px)
+    }
+
+    .reminder-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 2px
+    }
+
+    .reminder-content {
+      flex: 1
+    }
+
+    .reminder-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--txt);
+      margin-bottom: 3px
+    }
+
+    .reminder-desc {
+      font-size: 12px;
+      color: var(--txt3)
+    }
+
+    .reminder-time {
+      font-size: 11px;
+      color: var(--txt3);
+      white-space: nowrap;
+      margin-top: 4px
+    }
+
+    .reminder-del {
+      background: none;
+      border: none;
+      color: var(--txt3);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: all .15s
+    }
+
+    .reminder-del:hover {
+      color: var(--danger);
+      background: rgba(255, 71, 87, .1)
+    }
+
+    /* TOAST */
+    .toast-container {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none
+    }
+
+    .toast {
+      background: var(--card2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius2);
+      padding: 14px 18px;
+      min-width: 280px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow);
+      animation: slideIn .3s ease;
+      pointer-events: all;
+      font-size: 13.5px
+    }
+
+    .toast.exit {
+      animation: slideOut .3s ease forwards
+    }
+
+    .toast-icon {
+      font-size: 18px;
+      flex-shrink: 0
+    }
+
+    .toast-msg {
+      flex: 1;
+      color: var(--txt);
+      font-weight: 500
+    }
+
+    .toast-close {
+      background: none;
+      border: none;
+      color: var(--txt3);
+      cursor: pointer;
+      font-size: 16px
+    }
+
+    .toast.success {
+      border-left: 3px solid var(--success)
+    }
+
+    .toast.error {
+      border-left: 3px solid var(--danger)
+    }
+
+    .toast.info {
+      border-left: 3px solid var(--blue)
+    }
+
+    .toast.warn {
+      border-left: 3px solid var(--warn)
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .6);
+      backdrop-filter: blur(6px);
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all .3s
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      visibility: visible
+    }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(.96);
+      transition: transform .3s
+    }
+
+    .modal-overlay.open .modal {
+      transform: scale(1)
+    }
+
+    .modal-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px
+    }
+
+    .modal-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--txt)
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--txt3);
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: all .15s
+    }
+
+    .modal-close:hover {
+      color: var(--txt);
+      background: var(--border)
+    }
+
+    /* STATS ROW */
+    .stat-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap
+    }
+
+    .stat-pill {
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-radius: 30px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600
+    }
+
+    .stat-pill-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 700
+    }
+
+    /* GRID UTILS */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 16px
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--txt3)
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 12px
+    }
+
+    .empty-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--txt2);
+      margin-bottom: 6px
+    }
+
+    .empty-sub {
+      font-size: 13px
+    }
+
+    /* DIVIDER */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border2);
+      margin: 20px 0
+    }
+
+    /* SCROLL TO TOP */
+    .scroll-top {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 40px;
+      height: 40px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(26, 111, 255, .4);
+      transition: all .2s;
+      z-index: 500;
+      opacity: 0;
+      transform: translateY(10px)
+    }
+
+    .scroll-top.visible {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    .scroll-top:hover {
+      background: var(--blue2);
+      transform: translateY(-2px)
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0)
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        opacity: 1;
+        transform: translateX(0)
+      }
+
+      to {
+        opacity: 0;
+        transform: translateX(20px)
+      }
+    }
+
+    @keyframes countUp {
+      from {
+        opacity: 0;
+        transform: scale(.9)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1)
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .fade-in {
+      animation: fadeUp .5s ease both
+    }
+
+    .delay-1 {
+      animation-delay: .1s
+    }
+
+    .delay-2 {
+      animation-delay: .2s
+    }
+
+    .delay-3 {
+      animation-delay: .3s
+    }
+
+    /* MOBILE */
+    @media(max-width:1100px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .charts-grid {
+        grid-template-columns: 1fr
+      }
+
+      .chart-card.wide {
+        grid-column: span 1
+      }
+
+      .followup-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .analytics-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .two-col {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media(max-width:768px) {
+      :root {
+        --sidebar-w: 0px
+      }
+
+      .sidebar {
+        transform: translateX(-260px);
+        width: 260px
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0)
+      }
+
+      .main {
+        margin-left: 0
+      }
+
+      .hamburger {
+        display: block
+      }
+
+      .content {
+        padding: 16px
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr
+      }
+
+      .form-group.full,
+      .form-group.half {
+        grid-column: span 1
+      }
+
+      .followup-grid {
+        grid-template-columns: 1fr
+      }
+
+      .analytics-grid {
+        grid-template-columns: 1fr
+      }
+
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr
+      }
+
+      .topbar {
+        padding: 0 16px
+      }
+
+      .table-controls {
+        flex-direction: column
+      }
+
+      .search-wrap {
+        min-width: 100%
+      }
+    }
+
+    @media print {
+
+      .sidebar,
+      .topbar,
+      .form-actions,
+      .td-actions,
+      .table-controls,
+      .toast-container,
+      .scroll-top {
+        display: none !important
+      }
+
+      .main {
+        margin-left: 0
+      }
+
+      .content {
+        padding: 10px
+      }
+
+      .kpi-card,
+      .chart-card {
+        break-inside: avoid
+      }
+    }
+
+    .kei-watermark {
+      position: fixed;
+      bottom: 12px;
+      left: calc(var(--sidebar-w) + 12px);
+      font-size: 10px;
+      color: var(--txt3);
+      opacity: .5;
+      z-index: 0;
+      transition: left .3s
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo" onclick="goToPage('dashboard')" style="cursor:pointer" title="Go to Dashboard">
+      <div class="logo-wrap">
+        <div class="logo-icon">K</div>
+        <div class="logo-text">
+          <h2>KEI Industries</h2>
+          <p>Sales Ops Dashboard</p>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <span class="nav-section-label">Main</span>
+      <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard',this)">
+        <span class="nav-icon">📊</span><span>Dashboard</span>
+      </div>
+      <div class="nav-item" data-page="daily" onclick="navigate('daily',this)">
+        <span class="nav-icon">📝</span><span>Daily Updates</span>
+      </div>
+      <div class="nav-item" data-page="orders" onclick="navigate('orders',this)">
+        <span class="nav-icon">📦</span><span>Order Tracker</span>
+        <span class="nav-badge warn" id="nav-pending-badge">0</span>
+      </div>
+      <span class="nav-section-label">Operations</span>
+      <div class="nav-item" data-page="followups" onclick="navigate('followups',this)">
+        <span class="nav-icon">🔔</span><span>Follow-ups</span>
+        <span class="nav-badge" id="nav-fu-badge">0</span>
+      </div>
+      <div class="nav-item" data-page="dispatch" onclick="navigate('dispatch',this)">
+        <span class="nav-icon">🚚</span><span>Dispatch Tracker</span>
+      </div>
+      <div class="nav-item" data-page="activity" onclick="navigate('activity',this)">
+        <span class="nav-icon">📋</span><span>Activity Log</span>
+      </div>
+      <div class="nav-item" data-page="import" onclick="navigate('import',this)">
+        <span class="nav-icon">📥</span><span>Import Excel</span>
+      </div>
+      <span class="nav-section-label">Analytics</span>
+      <div class="nav-item" data-page="analytics" onclick="navigate('analytics',this)">
+        <span class="nav-icon">📈</span><span>Productivity</span>
+      </div>
+      <div class="nav-item" data-page="reminders" onclick="navigate('reminders',this)">
+        <span class="nav-icon">⏰</span><span>Reminders</span>
+        <span class="nav-badge success" id="nav-rem-badge">0</span>
+      </div>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="theme-toggle-btn" onclick="toggleTheme()">
+        <span id="theme-icon">☀️</span>
+        <span id="theme-label">Light Mode</span>
+      </button>
+      <button class="theme-toggle-btn" onclick="clearAllData()"
+        style="margin-top:8px;background:rgba(255,71,87,0.15);color:var(--danger)">
+        <span>🗑</span>
+        <span>Clear All Data</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
+        <span class="page-title" id="page-title">Dashboard Overview</span>
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-date" id="topbar-date"></span>
+        <button class="topbar-btn" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="topbar-btn primary" onclick="window.print()">🖨 Print</button>
+        <button class="topbar-btn" onclick="openReminderModal()" style="position:relative">
+          🔔
+          <span class="notif-dot" id="notif-dot" style="display:none"></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD PAGE -->
+      <div class="page active" id="page-dashboard">
+        <div class="kpi-grid">
+          <div class="kpi-card blue fade-in" style="cursor:pointer"
+            onclick="goToPage('orders', 'order-filter-status', '', 'filterOrders')" title="Click to view all orders">
+            <div class="kpi-icon">📦</div>
+            <div class="kpi-val" id="kpi-total">0</div>
+            <div class="kpi-label">Total Orders</div><span class="kpi-trend neutral" id="kpi-total-trend">All
+              time</span>
+          </div>
+          <div class="kpi-card yellow fade-in delay-1" style="cursor:pointer"
+            onclick="goToPage('orders', 'order-filter-status', 'Pending', 'filterOrders')"
+            title="Click to view pending orders">
+            <div class="kpi-icon">⏳</div>
+            <div class="kpi-val" id="kpi-pending">0</div>
+            <div class="kpi-label">Pending Orders</div><span class="kpi-trend down" id="kpi-pending-trend">Needs
+              action</span>
+          </div>
+          <div class="kpi-card green fade-in delay-2" style="cursor:pointer"
+            onclick="goToPage('orders', 'order-filter-status', 'Completed', 'filterOrders')"
+            title="Click to view completed orders">
+            <div class="kpi-icon">✅</div>
+            <div class="kpi-val" id="kpi-completed">0</div>
+            <div class="kpi-label">Completed</div><span class="kpi-trend up" id="kpi-comp-trend">—</span>
+          </div>
+          <div class="kpi-card red fade-in delay-3" style="cursor:pointer"
+            onclick="goToPage('orders', 'order-filter-status', 'Delayed', 'filterOrders')"
+            title="Click to view delayed orders">
+            <div class="kpi-icon">⚠️</div>
+            <div class="kpi-val" id="kpi-delayed">0</div>
+            <div class="kpi-label">Delayed Orders</div><span class="kpi-trend down" id="kpi-del-trend">Urgent</span>
+          </div>
+          <div class="kpi-card teal fade-in" style="cursor:pointer" onclick="goToPage('followups')"
+            title="Click to view follow-ups">
+            <div class="kpi-icon">📞</div>
+            <div class="kpi-val" id="kpi-fu-today">0</div>
+            <div class="kpi-label">Follow-ups Today</div><span class="kpi-trend neutral">Today</span>
+          </div>
+          <div class="kpi-card purple fade-in delay-1" style="cursor:pointer"
+            onclick="goToPage('dispatch', 'dispatch-filter', 'Completed', 'filterDispatch')"
+            title="Click to view completed dispatches">
+            <div class="kpi-icon">🚚</div>
+            <div class="kpi-val" id="kpi-dispatched">0</div>
+            <div class="kpi-label">Dispatches Done</div><span class="kpi-trend up">This week</span>
+          </div>
+          <div class="kpi-card orange fade-in delay-2" style="cursor:pointer"
+            onclick="goToPage('orders', 'order-filter-priority', 'Urgent', 'filterOrders')"
+            title="Click to view urgent tasks">
+            <div class="kpi-icon">🔥</div>
+            <div class="kpi-val" id="kpi-urgent">0</div>
+            <div class="kpi-label">Urgent Tasks</div><span class="kpi-trend down">High priority</span>
+          </div>
+          <div class="kpi-card indigo fade-in delay-3" style="cursor:pointer" onclick="goToPage('daily')"
+            title="Click to view all entries">
+            <div class="kpi-icon">🏢</div>
+            <div class="kpi-val" id="kpi-clients">0</div>
+            <div class="kpi-label">Total Clients</div><span class="kpi-trend up">Active</span>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card fade-in">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title">Orders by Status</div>
+                <div class="chart-subtitle">Current distribution</div>
+              </div><span class="chart-badge">Pie</span>
+            </div>
+            <div class="chart-wrap"><canvas id="chartStatus"></canvas></div>
+          </div>
+          <div class="chart-card fade-in delay-1">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title">Priority Distribution</div>
+                <div class="chart-subtitle">Task urgency breakdown</div>
+              </div><span class="chart-badge">Doughnut</span>
+            </div>
+            <div class="chart-wrap"><canvas id="chartPriority"></canvas></div>
+          </div>
+          <div class="chart-card fade-in">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title">Daily Follow-ups Completed</div>
+                <div class="chart-subtitle">Last 7 days</div>
+              </div><span class="chart-badge">Donut</span>
+            </div>
+            <div class="chart-wrap tall"><canvas id="chartFollowups"></canvas></div>
+          </div>
+          <div class="chart-card fade-in delay-1">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title">Dispatch vs Pending</div>
+                <div class="chart-subtitle">Weekly comparison</div>
+              </div><span class="chart-badge">Line</span>
+            </div>
+            <div class="chart-wrap tall"><canvas id="chartDispatch"></canvas></div>
+          </div>
+          <div class="chart-card wide fade-in">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title">Weekly Productivity Trend</div>
+                <div class="chart-subtitle">Orders updated per day</div>
+              </div><span class="chart-badge">Line</span>
+            </div>
+            <div class="chart-wrap"><canvas id="chartTrend"></canvas></div>
+          </div>
+        </div>
+
+        <div class="section-hdr">
+          <div class="section-title"><span class="dot"></span> Recent Entries</div>
+        </div>
+        <div class="table-wrap" id="dashboard-recent-table">
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <div class="empty-title">No entries yet</div>
+            <div class="empty-sub">Add your first daily update to get started</div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- IMPORT EXCEL PAGE -->
+      <div class="page" id="page-import">
+        <div class="section-hdr">
+          <div class="section-title"><span class="dot"></span> Import Excel Data</div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="form-card fade-in">
+          <div class="section-title" style="margin-bottom:16px"><span class="dot"></span> Upload Excel File</div>
+          <div
+            style="border:2px dashed var(--border);border-radius:var(--radius);padding:40px 24px;text-align:center;transition:all .3s;cursor:pointer"
+            id="drop-zone"
+            ondragover="event.preventDefault();this.style.borderColor='var(--blue)';this.style.background='rgba(26,111,255,0.05)'"
+            ondragleave="this.style.borderColor='var(--border)';this.style.background='transparent'"
+            ondrop="handleDrop(event)">
+            <div style="font-size:48px;margin-bottom:12px">📁</div>
+            <div style="font-size:15px;font-weight:600;color:var(--txt);margin-bottom:8px">Drop your Excel file here
+            </div>
+            <div style="font-size:13px;color:var(--txt3);margin-bottom:16px">or click to browse (.xlsx, .xls, .csv)
+            </div>
+            <input type="file" id="excel-file-input" accept=".xlsx,.xls,.csv" style="display:none"
+              onchange="handleFileSelect(event)">
+            <button class="btn btn-primary" onclick="document.getElementById('excel-file-input').click()">📂 Choose
+              File</button>
+          </div>
+          <div id="upload-status" style="margin-top:16px;display:none">
+            <div
+              style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg3);border-radius:var(--radius3);border:1px solid var(--border)">
+              <div id="upload-spinner"
+                style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite;flex-shrink:0">
+              </div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600;color:var(--txt)" id="upload-filename">Processing...</div>
+                <div style="font-size:11px;color:var(--txt3);margin-top:2px" id="upload-progress">Reading sheets...
+                </div>
+              </div>
+              <button class="btn btn-secondary" style="padding:6px 12px;font-size:12px"
+                onclick="cancelUpload()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column Mapping Section -->
+        <div class="form-card fade-in delay-1" id="mapping-section" style="display:none">
+          <div class="section-title" style="margin-bottom:16px"><span class="dot"></span> Map Columns</div>
+          <div style="font-size:12.5px;color:var(--txt3);margin-bottom:16px">Match your Excel columns to dashboard
+            fields. We'll auto-detect common headers.</div>
+
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px" id="mapping-grid">
+            <!-- Dynamically populated -->
+          </div>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="processImport()">✅ Import Data</button>
+            <button class="btn btn-secondary" onclick="resetImport()">🔄 Reset</button>
+            <button class="btn btn-warn" onclick="previewData()">👁 Preview First 5 Rows</button>
+          </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="form-card fade-in delay-2" id="preview-section" style="display:none">
+          <div class="section-title" style="margin-bottom:16px"><span class="dot"></span> Data Preview</div>
+          <div class="table-wrap" id="preview-table-wrap">
+            <div class="empty-state">
+              <div class="empty-icon">👁</div>
+              <div class="empty-title">Preview will appear here</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Import Results -->
+        <div class="form-card fade-in" id="import-results" style="display:none">
+          <div class="section-title" style="margin-bottom:16px"><span class="dot"></span> Import Summary</div>
+          <div class="analytics-grid" style="margin-bottom:0">
+            <div class="analytic-card">
+              <div class="analytic-num" id="imp-total" style="color:var(--blue)">0</div>
+              <div class="analytic-label">Total Rows</div>
+            </div>
+            <div class="analytic-card">
+              <div class="analytic-num" id="imp-imported" style="color:var(--success)">0</div>
+              <div class="analytic-label">Imported</div>
+            </div>
+            <div class="analytic-card">
+              <div class="analytic-num" id="imp-skipped" style="color:var(--warn)">0</div>
+              <div class="analytic-label">Skipped</div>
+            </div>
+            <div class="analytic-card">
+              <div class="analytic-num" id="imp-errors" style="color:var(--danger)">0</div>
+              <div class="analytic-label">Errors</div>
+            </div>
+          </div>
+          <div id="import-errors-list" style="margin-top:16px;display:none">
+            <div style="font-size:13px;font-weight:600;color:var(--danger);margin-bottom:8px">⚠ Issues Found:</div>
+            <div
+              style="max-height:200px;overflow-y:auto;background:var(--bg2);border-radius:var(--radius3);padding:12px;font-size:12px;color:var(--txt2);line-height:1.8"
+              id="errors-content"></div>
+          </div>
+        </div>
+
+        <!-- Imported Data with Filters -->
+        <div class="section-hdr" style="margin-top:24px">
+          <div class="section-title"><span class="dot"></span> Imported Data</div>
+          <button class="btn btn-export" onclick="exportImportedCSV()">⬇ Export Filtered</button>
+        </div>
+
+        <!-- Simplified Filter Section -->
+        <div class="form-card fade-in" style="margin-bottom:16px">
+          <div
+            style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:14px;font-weight:600;color:var(--txt)">🔍 Quick Filters</span>
+              <span style="font-size:11px;color:var(--txt3)">Filter & select rows to import</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span id="import-filter-count" style="font-size:12px;font-weight:600;color:var(--blue)">0</span>
+              <span style="font-size:12px;color:var(--txt3)">/ <span id="import-total-count">0</span> selected</span>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:12px;align-items:end">
+            <div class="form-group" style="margin:0">
+              <label style="font-size:11px">Search</label>
+              <div class="search-wrap"><span class="search-icon">🔍</span><input type="text" id="import-search"
+                  placeholder="Search client, project, remarks..." oninput="debounceFilter()"></div>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label style="font-size:11px">Status</label>
+              <select id="import-filter-status" onchange="filterImported()">
+                <option value="">All</option>
+                <option>Pending</option>
+                <option>In Progress</option>
+                <option>Completed</option>
+                <option>Delayed</option>
+                <option>On Hold</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label style="font-size:11px">Priority</label>
+              <select id="import-filter-priority" onchange="filterImported()">
+                <option value="">All</option>
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+                <option>Urgent</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label style="font-size:11px">Dispatch</label>
+              <select id="import-filter-dispatch" onchange="filterImported()">
+                <option value="">All</option>
+                <option>Not Started</option>
+                <option>Partial</option>
+                <option>Completed</option>
+                <option>In Transit</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-secondary" style="padding:8px 12px;font-size:12px" onclick="clearImportFilters()"
+                title="Clear">🔄</button>
+              <button class="btn btn-warn" style="padding:8px 12px;font-size:12px" onclick="selectAllVisible()"
+                title="Select All Visible">☑</button>
+              <button class="btn btn-danger" style="padding:8px 12px;font-size:12px" onclick="deselectAllVisible()"
+                title="Deselect All Visible">☐</button>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="addFilteredToDashboard()">➕ Add Selected to Dashboard</button>
+            <button class="btn btn-export" onclick="exportImportedCSV()">⬇ Export Selected</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table id="import-table">
+            <thead>
+              <tr>
+                <th style="width:40px"><input type="checkbox" id="import-select-all" onchange="toggleSelectAll()"></th>
+                <th>Date</th>
+                <th>Client</th>
+                <th>Project</th>
+                <th>Order Status</th>
+                <th>Dispatch</th>
+                <th>Priority</th>
+                <th>Follow-up</th>
+                <th>EDD</th>
+                <th>Factory</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="import-tbody">
+              <tr>
+                <td colspan="12">
+                  <div class="empty-state">
+                    <div class="empty-icon">📥</div>
+                    <div class="empty-title">Import an Excel file to see data here</div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DAILY UPDATES PAGE -->
+      <div class="page" id="page-daily">
+        <div class="form-card fade-in">
+          <div class="section-hdr" style="margin-bottom:18px">
+            <div class="section-title"><span class="dot"></span> <span id="form-mode-label">Add New Entry</span></div>
+            <div style="font-size:12px;color:var(--txt3)" id="form-edit-id"></div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label>Date *</label><input type="date" id="f-date"></div>
+            <div class="form-group"><label>Client Name *</label><input type="text" id="f-client"
+                placeholder="Enter client name"></div>
+            <div class="form-group"><label>Project Name *</label><input type="text" id="f-project"
+                placeholder="Enter project name"></div>
+            <div class="form-group"><label>Order Status</label>
+              <select id="f-order-status">
+                <option value="">Select Status</option>
+                <option>Pending</option>
+                <option>In Progress</option>
+                <option>Completed</option>
+                <option>Delayed</option>
+                <option>On Hold</option>
+                <option>Cancelled</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Dispatch Status</label>
+              <select id="f-dispatch-status">
+                <option value="">Select Status</option>
+                <option>Not Started</option>
+                <option>Partial</option>
+                <option>Completed</option>
+                <option>Pending</option>
+                <option>In Transit</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Priority</label>
+              <select id="f-priority">
+                <option value="">Select Priority</option>
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+                <option>Urgent</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Follow-up Status</label>
+              <select id="f-followup">
+                <option value="">Select</option>
+                <option>Pending</option>
+                <option>Done</option>
+                <option>Escalated</option>
+                <option>Not Required</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Expected Delivery Date</label><input type="date" id="f-delivery"></div>
+            <div class="form-group"><label>Factory Update</label><input type="text" id="f-factory"
+                placeholder="Factory status update"></div>
+            <div class="form-group full"><label>Remarks</label><textarea id="f-remarks"
+                placeholder="Enter remarks"></textarea></div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="submitEntry()">💾 <span id="submit-btn-label">Add
+                Entry</span></button>
+            <button class="btn btn-secondary" onclick="clearForm()">🔄 Clear Form</button>
+            <button class="btn btn-warn" id="cancel-edit-btn" onclick="cancelEdit()" style="display:none">✕ Cancel
+              Edit</button>
+          </div>
+        </div>
+
+        <div class="section-hdr">
+          <div class="section-title"><span class="dot"></span> All Entries</div>
+          <button class="btn btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+        </div>
+        <div class="table-controls">
+          <div class="search-wrap"><span class="search-icon">🔍</span><input type="text" id="search-input"
+              placeholder="Search client, project, remarks..." oninput="filterTable()"></div>
+          <select class="filter-select" id="filter-status" onchange="filterTable()">
+            <option value="">All Statuses</option>
+            <option>Pending</option>
+            <option>In Progress</option>
+            <option>Completed</option>
+            <option>Delayed</option>
+            <option>On Hold</option>
+          </select>
+          <select class="filter-select" id="filter-priority" onchange="filterTable()">
+            <option value="">All Priorities</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+            <option>Urgent</option>
+          </select>
+          <select class="filter-select" id="filter-followup" onchange="filterTable()">
+            <option value="">All Follow-ups</option>
+            <option>Pending</option>
+            <option>Done</option>
+            <option>Escalated</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table id="main-table">
+            <thead>
+              <tr>
+                <th onclick="sortTable('date')">Date <span class="sort-arrow">↕</span></th>
+                <th onclick="sortTable('clientName')">Client <span class="sort-arrow">↕</span></th>
+                <th onclick="sortTable('projectName')">Project <span class="sort-arrow">↕</span></th>
+                <th>Order Status</th>
+                <th>Dispatch</th>
+                <th>Priority</th>
+                <th>Follow-up</th>
+                <th>EDD</th>
+                <th>Factory</th>
+                <th>Remarks</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="main-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ORDERS PAGE -->
+      <div class="page" id="page-orders">
+        <div class="stat-row" id="order-stats-row"></div>
+        <div class="section-hdr">
+          <div class="section-title"><span class="dot"></span> Order Status Tracker</div>
+        </div>
+        <div class="table-controls">
+          <div class="search-wrap"><span class="search-icon">🔍</span><input type="text" id="order-search"
+              placeholder="Search orders..." oninput="filterOrders()"></div>
+          <select class="filter-select" id="order-filter-status" onchange="filterOrders()">
+            <option value="">All Statuses</option>
+            <option>Pending</option>
+            <option>In Progress</option>
+            <option>Completed</option>
+            <option>Delayed</option>
+            <option>On Hold</option>
+          </select>
+          <select class="filter-select" id="order-filter-priority" onchange="filterOrders()">
+            <option value="">All Priorities</option>
+            <option>Urgent</option>
+            <option>High</option>
+            <option>Medium</option>
+            <option>Low</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Client</th>
+                <th>Project</th>
+                <th>Order Status</th>
+                <th>Priority</th>
+                <th>EDD</th>
+                <th>Delivery</th>
+                <th>Remarks</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="orders-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FOLLOW-UPS PAGE -->
+      <div class="page" id="page-followups">
+        <div class="grid-2" style="margin-bottom:20px">
+          <div class="analytic-card">
+            <div class="analytic-num" id="fu-pending-num" style="color:var(--warn)">0</div>
+            <div class="analytic-label">Pending Follow-ups</div>
+          </div>
+          <div class="analytic-card">
+            <div class="analytic-num" id="fu-done-num" style="color:var(--success)">0</div>
+            <div class="analytic-label">Completed Today</div>
+          </div>
+        </div>
+
+        <div class="section-hdr">
+          <div class="section-title"><span class="dot"></span> Pending Follow-ups</div>
+        </div>
+        <div class="followup-grid" id="fu-pending-grid">
+          <div class="empty-state" style="grid-column:span 3">
+            <div class="empty-icon">🎉</div>
+            <div class="empty-title">All clear!</div>
+            <div class="empty-sub">No pending follow-ups</div>
+          </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-hdr">
+          <div class="section-title"><span class="dot"></span> Escalated Cases</div>
+        </div>
+        <div class="followup-grid" id="fu-escalated-grid">
+          <div class="empty-state" style="grid-column:span 3">
+            <div class="empty-icon">✅</div>
+            <div class="empty-title">No escalated cases</div>
+          </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-hdr">
+          <div class="section-title"><span class="dot"></span> Factory Delay Alerts</div>
+        </div>
+        <div class="followup-grid" id="fu-delayed-grid">
+          <div class="empty-state" style="grid-column:span 3">
+            <div class="empty-icon">🏭</div>
+            <div class="empty-title">No factory delays recorded</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DISPATCH PAGE -->
+      <div class="page" id="page-dispatch">
+        <div class="stat-row" id="dispatch-stats-row"></div>
+        <div class="section-hdr">
+          <div class="section-title"><span class="dot"></span> Dispatch Status Tracker</div>
+        </div>
+        <div class="table-controls">
+          <div class="search-wrap"><span class="search-icon">🔍</span><input type="text" id="dispatch-search"
+              placeholder="Search dispatches..." oninput="filterDispatch()"></div>
+          <select class="filter-select" id="dispatch-filter" onchange="filterDispatch()">
+            <option value="">All Statuses</option>
+            <option>Not Started</option>
+            <option>Partial</option>
+            <option>Completed</option>
+            <option>Pending</option>
+            <option>In Transit</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Client</th>
+                <th>Project</th>
+                <th>Dispatch Status</th>
+                <th>Order Status</th>
+                <th>Factory Update</th>
+                <th>EDD</th>
+                <th>Priority</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="dispatch-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ACTIVITY PAGE -->
+      <div class="page" id="page-activity">
+        <div class="section-hdr">
+          <div class="section-title"><span class="dot"></span> Activity Timeline</div>
+          <button class="btn btn-danger" onclick="clearActivity()">🗑 Clear Log</button>
+        </div>
+        <div class="form-card">
+          <div class="activity-list" id="activity-list">
+            <div class="empty-state">
+              <div class="empty-icon">📋</div>
+              <div class="empty-title">No activity yet</div>
+              <div class="empty-sub">Actions will appear here automatically</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS PAGE -->
+      <div class="page" id="page-analytics">
+        <div class="analytics-grid fade-in">
+          <div class="analytic-card">
+            <div class="analytic-num" id="an-today">0</div>
+            <div class="analytic-label">Entries Today</div>
+            <div class="analytic-bar-wrap">
+              <div class="analytic-bar" id="an-today-bar" style="width:0%;background:var(--grad1)"></div>
+            </div>
+          </div>
+          <div class="analytic-card">
+            <div class="analytic-num" id="an-week">0</div>
+            <div class="analytic-label">This Week</div>
+            <div class="analytic-bar-wrap">
+              <div class="analytic-bar" id="an-week-bar" style="width:0%;background:var(--grad3)"></div>
+            </div>
+          </div>
+          <div class="analytic-card">
+            <div class="analytic-num" id="an-month">0</div>
+            <div class="analytic-label">This Month</div>
+            <div class="analytic-bar-wrap">
+              <div class="analytic-bar" id="an-month-bar" style="width:0%;background:var(--grad2)"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2 fade-in delay-1">
+          <div class="form-card">
+            <div class="section-title" style="margin-bottom:16px"><span class="dot"></span> Completion Metrics</div>
+            <div class="progress-section">
+              <div class="progress-item">
+                <div class="progress-hdr"><span class="progress-label">Order Completion Rate</span><span
+                    class="progress-val" id="pr-completion">0%</span></div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="pr-completion-bar" style="width:0%;background:var(--grad4)"></div>
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-hdr"><span class="progress-label">Follow-up Completion</span><span
+                    class="progress-val" id="pr-fu">0%</span></div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="pr-fu-bar" style="width:0%;background:var(--grad1)"></div>
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-hdr"><span class="progress-label">Dispatch Completion</span><span
+                    class="progress-val" id="pr-dispatch">0%</span></div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="pr-dispatch-bar" style="width:0%;background:var(--grad3)"></div>
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-hdr"><span class="progress-label">Delay Rate</span><span class="progress-val"
+                    id="pr-delay">0%</span></div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="pr-delay-bar" style="width:0%;background:var(--grad5)"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-card">
+            <div class="section-title" style="margin-bottom:16px"><span class="dot"></span> Smart Summary</div>
+            <div id="smart-summary" style="font-size:13.5px;line-height:1.8;color:var(--txt2)">
+              Add entries to generate your smart summary.
+            </div>
+            <button class="btn btn-primary" style="margin-top:14px" onclick="generateSummary()">🤖 Regenerate
+              Summary</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- REMINDERS PAGE -->
+      <div class="page" id="page-reminders">
+        <div class="form-card fade-in">
+          <div class="section-title" style="margin-bottom:16px"><span class="dot"></span> Add Reminder</div>
+          <div class="grid-2">
+            <div class="form-group"><label>Title</label><input type="text" id="rem-title" placeholder="Reminder title">
+            </div>
+            <div class="form-group"><label>Date & Time</label><input type="datetime-local" id="rem-datetime"></div>
+            <div class="form-group"><label>Type</label>
+              <select id="rem-type">
+                <option value="info">Info</option>
+                <option value="warn">Warning</option>
+                <option value="danger">Urgent</option>
+                <option value="success">Completed</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Description</label><input type="text" id="rem-desc"
+                placeholder="Description"></div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:14px" onclick="addReminder()">⏰ Set Reminder</button>
+        </div>
+        <div class="section-hdr">
+          <div class="section-title"><span class="dot"></span> Active Reminders</div>
+        </div>
+        <div class="reminder-list" id="reminder-list">
+          <div class="empty-state">
+            <div class="empty-icon">⏰</div>
+            <div class="empty-title">No reminders set</div>
+            <div class="empty-sub">Add reminders to stay on top of your tasks</div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- FOOTER -->
+      <div
+        style="text-align:center;padding:20px 0;margin-top:20px;border-top:1px solid var(--border2);font-size:12px;color:var(--txt3);letter-spacing:0.5px">
+        © 2025 KEI Industries — ALL RIGHTS RESERVED APP BY YASH AIL
+      </div>
+    </div><!-- /content -->
+  </main>
+
+  <!-- ADD REMINDER MODAL (from notification bell) -->
+  <div class="modal-overlay" id="reminder-modal">
+    <div class="modal">
+      <div class="modal-hdr">
+        <div class="modal-title">⏰ Quick Reminder</div><button class="modal-close"
+          onclick="closeReminderModal()">✕</button>
+      </div>
+      <div class="form-group" style="margin-bottom:12px"><label>Title</label><input type="text" id="qrem-title"
+          placeholder="Enter title"></div>
+      <div class="form-group" style="margin-bottom:12px"><label>Description</label><input type="text" id="qrem-desc"
+          placeholder="Enter details"></div>
+      <div class="form-group" style="margin-bottom:16px"><label>Type</label><select id="qrem-type">
+          <option value="info">Info</option>
+          <option value="warn">Warning</option>
+          <option value="danger">Urgent</option>
+        </select></div>
+      <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="addQuickReminder()">Add
+          Reminder</button><button class="btn btn-secondary" onclick="closeReminderModal()">Cancel</button></div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- SCROLL TOP -->
+  <button class="scroll-top" id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+  <span class="kei-watermark">KEI Industries © 2025 | Execution Sales Dashboard</span>
+
+  <script>
+    // ========================
+    // DATA LAYER
+    // ========================
+    let DB = {
+      entries: JSON.parse(localStorage.getItem('kei_entries') || '[]'),
+      activity: JSON.parse(localStorage.getItem('kei_activity') || '[]'),
+      reminders: JSON.parse(localStorage.getItem('kei_reminders') || '[]'),
+    };
+
+    function save() {
+      localStorage.setItem('kei_entries', JSON.stringify(DB.entries));
+      localStorage.setItem('kei_activity', JSON.stringify(DB.activity));
+      localStorage.setItem('kei_reminders', JSON.stringify(DB.reminders));
+    }
+
+    function clearAllData() {
+      if (!confirm('⚠️ WARNING: This will delete ALL entries, activity logs, and reminders.\n\nThis action cannot be undone.\n\nAre you sure?')) return;
+      if (!confirm('FINAL CONFIRMATION: Delete everything?')) return;
+
+      DB.entries = [];
+      DB.activity = [];
+      DB.reminders = [];
+      save();
+
+      // Clear any import data too
+      importRawData = [];
+      importMappedData = [];
+      importFilteredData = [];
+
+      updateKPIs();
+      renderPage(currentPage);
+      destroyCharts();
+      setTimeout(initCharts, 100);
+
+      showToast('🗑 All data cleared. Dashboard is now empty.', 'success');
+    }
+
+    // ========================
+    // SAMPLE DATA — Last 7 Days
+    // ========================
+    (function seedSampleData() {
+      if (DB.entries.length > 0) return;
+
+      var clients = ['Tata Projects', 'L&T Construction', 'Adani Infra', 'Shapoorji', 'Godrej Properties', 'Prestige Group', 'DLF Ltd', 'Mahindra Realty'];
+      var projects = ['HT Cable Supply', 'LT Panel Installation', 'Cable Tray Works', 'Substation Wiring', 'Armoured Cable', 'Control Cable Lot', 'Power Cable Ph2', 'Earthing System'];
+      var orderStatuses = ['Pending', 'In Progress', 'Completed', 'Delayed', 'On Hold'];
+      var priorities = ['Low', 'Medium', 'High', 'Urgent'];
+
+      var dayConfig = [
+        { entries: 4, fuDone: 2, dispatched: 1 },
+        { entries: 6, fuDone: 4, dispatched: 2 },
+        { entries: 5, fuDone: 3, dispatched: 3 },
+        { entries: 8, fuDone: 6, dispatched: 4 },
+        { entries: 7, fuDone: 5, dispatched: 3 },
+        { entries: 9, fuDone: 7, dispatched: 5 },
+        { entries: 6, fuDone: 4, dispatched: 2 },
+      ];
+
+      var idCounter = 1;
+      for (var i = 0; i < 7; i++) {
+        var d = new Date();
+        d.setDate(d.getDate() - 6 + i);
+        var dateStr = d.toISOString().split('T')[0];
+        var cfg = dayConfig[i];
+
+        for (var j = 0; j < cfg.entries; j++) {
+          var isDispatched = j < cfg.dispatched;
+          var isFuDone = j < cfg.fuDone;
+          var clientIdx = (idCounter * 3 + j) % clients.length;
+          var projIdx = (idCounter + j * 2) % projects.length;
+          var orderIdx = isDispatched ? 2 : (j % 3 === 0 ? 3 : j % 2 === 0 ? 1 : 0);
+          var ed = new Date(d);
+          ed.setDate(ed.getDate() + 7 + j);
+
+          DB.entries.push({
+            id: 'sample_' + idCounter++,
+            date: dateStr,
+            clientName: clients[clientIdx],
+            projectName: projects[projIdx],
+            orderStatus: orderStatuses[orderIdx],
+            dispatchStatus: isDispatched ? 'Completed' : (j % 3 === 0 ? 'In Transit' : j % 2 === 0 ? 'Partial' : 'Pending'),
+            priority: priorities[j % priorities.length],
+            followUpStatus: isFuDone ? 'Done' : (j % 4 === 0 ? 'Escalated' : 'Pending'),
+            expectedDelivery: ed.toISOString().split('T')[0],
+            factoryUpdate: isFuDone ? 'Material dispatched from factory' : (j % 2 === 0 ? 'Production in progress' : 'Awaiting clearance'),
+            remarks: isDispatched ? 'Delivered on schedule' : (j % 3 === 0 ? 'Client follow-up pending' : 'As per plan'),
+            createdAt: d.getTime(),
+            updatedAt: d.getTime()
+          });
+        }
+      }
+      save();
+    })();
+
+    // ========================
+    // NAVIGATION HELPERS
+    // ========================
+    function goToPage(pageName, filterField, filterValue, filterFunc) {
+      if (filterField) {
+        pendingFilter = { page: pageName, filterId: filterField, filterValue: filterValue, filterFunc: filterFunc };
+      } else {
+        pendingFilter = null;
+      }
+      var navEl = document.querySelector('.nav-item[data-page="' + pageName + '"]');
+      navigate(pageName, navEl);
+    }
+
+    // ========================
+    // NAVIGATION
+    // ========================
+    const PAGE_TITLES = {
+      dashboard: 'Dashboard Overview', daily: 'Daily Updates', orders: 'Order Tracker',
+      followups: 'Follow-up Management', dispatch: 'Dispatch Tracker',
+      activity: 'Activity Log', analytics: 'Productivity Analytics', reminders: 'Reminders'
+    };
+    let currentPage = 'dashboard';
+
+    // Pending filter to apply after navigation (for chart/KPI clicks)
+    let pendingFilter = null;
+
+    function navigate(page, el) {
+      // If leaving dashboard, destroy charts to free memory
+      if (currentPage === 'dashboard') {
+        destroyCharts();
+      }
+
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('page-' + page).classList.add('active');
+      if (el) el.classList.add('active');
+      document.getElementById('page-title').textContent = PAGE_TITLES[page];
+      currentPage = page;
+      renderPage(page);
+      if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('mobile-open');
+      window.scrollTo(0, 0);
+
+      // Apply any pending filter from chart/KPI clicks
+      if (pendingFilter) {
+        setTimeout(function () {
+          applyPendingFilter();
+        }, 200);
+      }
+    }
+
+    function applyPendingFilter() {
+      if (!pendingFilter) return;
+      const { page, filterId, filterValue, filterFunc } = pendingFilter;
+      if (currentPage !== page) return;
+      const el = document.getElementById(filterId);
+      if (el) {
+        el.value = filterValue;
+        if (filterFunc === 'filterOrders') filterOrders();
+        else if (filterFunc === 'filterDispatch') filterDispatch();
+        else if (filterFunc === 'filterTable') filterTable();
+        showToast('🔍 Filtered: ' + filterValue, 'info');
+      }
+      pendingFilter = null;
+    }
+
+    function renderPage(page) {
+      if (page === 'dashboard') renderDashboard();
+      else if (page === 'daily') renderTable();
+      else if (page === 'orders') renderOrders();
+      else if (page === 'followups') renderFollowups();
+      else if (page === 'dispatch') renderDispatch();
+      else if (page === 'activity') renderActivity();
+      else if (page === 'analytics') renderAnalytics();
+      else if (page === 'reminders') renderReminders();
+      else if (page === 'import') { /* Import page renders itself on file load */ }
+
+      // Force chart redraw after layout settles
+      setTimeout(function () {
+        Object.values(charts).forEach(function (chart) {
+          if (chart && typeof chart.resize === 'function') {
+            chart.resize();
+          }
+        });
+      }, 300);
+
+      // Additional update after fonts load
+      setTimeout(function () {
+        Object.values(charts).forEach(function (chart) {
+          if (chart && typeof chart.update === 'function') {
+            chart.update('none');
+          }
+        });
+      }, 1000);
+    }
+
+    // ========================
+    // SIDEBAR & THEME
+    // ========================
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('mobile-open');
+    }
+    let isDark = localStorage.getItem('kei_theme') !== 'light';
+    function toggleTheme() {
+      isDark = !isDark;
+      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      document.getElementById('theme-icon').textContent = isDark ? '☀️' : '🌙';
+      document.getElementById('theme-label').textContent = isDark ? 'Light Mode' : 'Dark Mode';
+      localStorage.setItem('kei_theme', isDark ? 'dark' : 'light');
+      setTimeout(() => { destroyCharts(); initCharts(); }, 100);
+    }
+    if (!isDark) {
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.getElementById('theme-icon').textContent = '🌙';
+      document.getElementById('theme-label').textContent = 'Dark Mode';
+    }
+
+    // ========================
+    // DATE & TIME
+    // ========================
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('topbar-date').textContent =
+        now.toLocaleDateString('en-IN', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }) +
+        ' • ' + now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Set default date to today
+    document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+
+    // ========================
+    // KPI CALCULATIONS
+    // ========================
+    function calcKPIs() {
+      const e = DB.entries;
+      const today = new Date().toISOString().split('T')[0];
+      return {
+        total: e.length,
+        pending: e.filter(x => x.orderStatus === 'Pending').length,
+        completed: e.filter(x => x.orderStatus === 'Completed').length,
+        delayed: e.filter(x => x.orderStatus === 'Delayed').length,
+        fuToday: e.filter(x => x.date === today && x.followUpStatus === 'Done').length,
+        dispatched: e.filter(x => x.dispatchStatus === 'Completed').length,
+        urgent: e.filter(x => x.priority === 'Urgent').length,
+        clients: [...new Set(e.map(x => x.clientName).filter(Boolean))].length,
+      };
+    }
+
+    function updateKPIs() {
+      const k = calcKPIs();
+      animateNum('kpi-total', k.total);
+      animateNum('kpi-pending', k.pending);
+      animateNum('kpi-completed', k.completed);
+      animateNum('kpi-delayed', k.delayed);
+      animateNum('kpi-fu-today', k.fuToday);
+      animateNum('kpi-dispatched', k.dispatched);
+      animateNum('kpi-urgent', k.urgent);
+      animateNum('kpi-clients', k.clients);
+      document.getElementById('nav-pending-badge').textContent = k.pending;
+      document.getElementById('nav-fu-badge').textContent = DB.entries.filter(x => x.followUpStatus === 'Pending').length;
+      document.getElementById('nav-rem-badge').textContent = DB.reminders.length;
+      document.getElementById('notif-dot').style.display = DB.reminders.some(r => new Date(r.datetime) <= new Date()) ? 'block' : 'none';
+    }
+
+    function animateNum(id, target) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      let start = 0;
+      const step = Math.ceil(target / 20);
+      const interval = setInterval(() => {
+        start = Math.min(start + step, target);
+        el.textContent = start;
+        if (start >= target) clearInterval(interval);
+      }, 40);
+    }
+
+    // ========================
+    // CHARTS
+    // ========================
+    let charts = {};
+    function destroyCharts() {
+      Object.values(charts).forEach(c => { try { c.destroy(); } catch (e) { } });
+      charts = {};
+    }
+
+    const chartDefaults = {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--txt2').trim(), font: { family: 'DM Sans', size: 12 }, boxWidth: 12, padding: 16 } } }
+    };
+
+    function getChartColors() {
+      return {
+        blue: '#1a6fff', teal: '#00d4aa', orange: '#ff6b35', red: '#ff4757',
+        green: '#2ed573', purple: '#8b5cf6', yellow: '#ffa502', indigo: '#6366f1',
+        txt: isDark ? '#e8f0fe' : '#0a1628', txt2: isDark ? '#8ba3c7' : '#4a6080',
+        grid: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)',
+      };
+    }
+
+    function initCharts() {
+      // Only init charts if dashboard is visible
+      const dashPage = document.getElementById('page-dashboard');
+      if (!dashPage || !dashPage.classList.contains('active')) {
+        console.log('Dashboard not visible, skipping chart init');
+        return;
+      }
+
+      // Ensure canvas containers have dimensions before init
+      const chartWraps = document.querySelectorAll('.chart-wrap');
+      chartWraps.forEach(function (wrap) {
+        wrap.style.minHeight = wrap.classList.contains('tall') ? '260px' : '220px';
+        wrap.style.position = 'relative';
+      });
+
+      const e = DB.entries;
+      const c = getChartColors();
+
+      console.log('Chart init - entries count:', e.length);
+      const statuses = ['Pending', 'In Progress', 'Completed', 'Delayed', 'On Hold'];
+      const statusCounts = statuses.map(s => e.filter(x => x.orderStatus === s).length);
+      const priorities = ['Low', 'Medium', 'High', 'Urgent'];
+      const prioCounts = priorities.map(p => e.filter(x => x.priority === p).length);
+
+      // Generate last 7 days labels
+      const days7 = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(); d.setDate(d.getDate() - 6 + i);
+        return d.toISOString().split('T')[0];
+      });
+      const dayLabels = days7.map(d => new Date(d).toLocaleDateString('en-IN', { weekday: 'short', day: '2-digit' }));
+      const fuData = days7.map(d => e.filter(x => x.date === d && x.followUpStatus === 'Done').length);
+      const trendData = days7.map(d => e.filter(x => x.date === d).length);
+      const dispatchedData = days7.map(d => e.filter(x => x.date === d && x.dispatchStatus === 'Completed').length);
+      const pendingData = days7.map(d => e.filter(x => x.date === d && x.dispatchStatus !== 'Completed').length);
+
+      const axisStyle = { color: c.txt2, font: { family: 'DM Sans', size: 11 } };
+      const gridStyle = { color: c.grid, drawBorder: false };
+      const tickStyle = { color: c.txt2, font: { family: 'DM Sans', size: 11 } };
+
+      console.log('Chart data:', { statusCounts, prioCounts, fuData, trendData, dispatchedData, pendingData, dayLabels });
+
+      if (document.getElementById('chartStatus')) {
+        try {
+          charts.status = new Chart(document.getElementById('chartStatus'), {
+            type: 'pie',
+            data: { labels: statuses, datasets: [{ data: statusCounts, backgroundColor: [c.yellow, c.blue, c.green, c.red, c.purple], borderWidth: 2, borderColor: isDark ? '#152233' : '#fff' }] },
+            options: {
+              ...chartDefaults,
+              plugins: { ...chartDefaults.plugins },
+              onClick: function (evt, elements) {
+                if (elements && elements.length > 0) {
+                  const idx = elements[0].index;
+                  const label = statuses[idx];
+                  navigateFromChart('status', label, statusCounts[idx]);
+                }
+              },
+              onHover: function (evt, elements) {
+                evt.native.target.style.cursor = elements && elements.length > 0 ? 'pointer' : 'default';
+              }
+            }
+          });
+        } catch (err) { console.error('chartStatus init error:', err); }
+      }
+
+      if (document.getElementById('chartPriority')) {
+        try {
+          charts.priority = new Chart(document.getElementById('chartPriority'), {
+            type: 'doughnut',
+            data: { labels: priorities, datasets: [{ data: prioCounts, backgroundColor: [c.teal, c.blue, c.orange, c.red], borderWidth: 2, borderColor: isDark ? '#152233' : '#fff', cutout: '70%' }] },
+            options: {
+              ...chartDefaults,
+              onClick: function (evt, elements) {
+                if (elements && elements.length > 0) {
+                  const idx = elements[0].index;
+                  const label = priorities[idx];
+                  navigateFromChart('priority', label, prioCounts[idx]);
+                }
+              },
+              onHover: function (evt, elements) {
+                evt.native.target.style.cursor = elements && elements.length > 0 ? 'pointer' : 'default';
+              }
+            }
+          });
+        } catch (err) { console.error('chartPriority init error:', err); }
+      }
+
+      if (document.getElementById('chartFollowups')) {
+        try {
+          // Doughnut: each segment = one of the last 7 days
+          var fuDataDisplay = fuData.every(function (v) { return v === 0; }) ? [1, 1, 1, 1, 1, 1, 1] : fuData;
+          var donutColors = [
+            'rgba(26,111,255,0.85)',
+            'rgba(0,212,170,0.85)',
+            'rgba(255,107,53,0.85)',
+            'rgba(139,92,246,0.85)',
+            'rgba(46,213,115,0.85)',
+            'rgba(255,165,2,0.85)',
+            'rgba(255,71,87,0.85)'
+          ];
+          var totalFU = fuData.reduce(function(a,b){ return a+b; }, 0);
+          charts.followups = new Chart(document.getElementById('chartFollowups'), {
+            type: 'doughnut',
+            data: {
+              labels: dayLabels,
+              datasets: [{
+                label: 'Follow-ups Done',
+                data: fuDataDisplay,
+                backgroundColor: donutColors,
+                borderColor: isDark ? '#152233' : '#fff',
+                borderWidth: 3,
+                hoverOffset: 8,
+                cutout: '68%'
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'right',
+                  labels: {
+                    color: c.txt2,
+                    font: { family: 'DM Sans', size: 11 },
+                    boxWidth: 12,
+                    padding: 10,
+                    generateLabels: function(chart) {
+                      var data = chart.data;
+                      return data.labels.map(function(label, i) {
+                        var realVal = fuData[i];
+                        return {
+                          text: label + ' (' + realVal + ')',
+                          fillStyle: donutColors[i],
+                          strokeStyle: isDark ? '#152233' : '#fff',
+                          lineWidth: 2,
+                          index: i
+                        };
+                      });
+                    }
+                  }
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      var realVal = fuData[context.dataIndex];
+                      return ' ' + context.label + ': ' + realVal + ' follow-up' + (realVal !== 1 ? 's' : '') + ' done';
+                    }
+                  },
+                  backgroundColor: isDark ? '#1a2d45' : '#fff',
+                  titleColor: c.txt,
+                  bodyColor: c.txt2,
+                  borderColor: c.grid,
+                  borderWidth: 1
+                },
+                // Center text plugin
+                beforeDraw: function() {}
+              },
+              onClick: function (evt, elements) {
+                if (elements && elements.length > 0) {
+                  const idx = elements[0].index;
+                  navigateFromChart('followups', dayLabels[idx], fuData[idx]);
+                }
+              },
+              onHover: function (evt, elements) {
+                evt.native.target.style.cursor = elements && elements.length > 0 ? 'pointer' : 'default';
+              }
+            },
+            plugins: [{
+              id: 'centerText',
+              afterDraw: function(chart) {
+                var ctx = chart.ctx;
+                var width = chart.width, height = chart.height;
+                var cx = chart.chartArea ? (chart.chartArea.left + chart.chartArea.right) / 2 : width / 2;
+                var cy = chart.chartArea ? (chart.chartArea.top + chart.chartArea.bottom) / 2 : height / 2;
+                ctx.save();
+                ctx.font = 'bold 26px Space Grotesk, DM Sans, sans-serif';
+                ctx.fillStyle = isDark ? '#e8f0fe' : '#0a1628';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(totalFU, cx, cy - 8);
+                ctx.font = '11px DM Sans, sans-serif';
+                ctx.fillStyle = isDark ? '#8ba3c7' : '#4a6080';
+                ctx.fillText('Total Done', cx, cy + 14);
+                ctx.restore();
+              }
+            }]
+          });
+        } catch (err) { console.error('chartFollowups init error:', err); }
+      }
+
+      if (document.getElementById('chartDispatch')) {
+        try {
+          var dispDataDisplay = dispatchedData.every(function (v) { return v === 0; }) ? [0, 0, 0, 0, 0, 0, 0] : dispatchedData;
+          var pendDataDisplay = pendingData.every(function (v) { return v === 0; }) ? [0, 0, 0, 0, 0, 0, 0] : pendingData;
+          charts.dispatch = new Chart(document.getElementById('chartDispatch'), {
+            type: 'line',
+            data: {
+              labels: dayLabels,
+              datasets: [
+                {
+                  label: 'Dispatched',
+                  data: dispDataDisplay,
+                  borderColor: c.teal,
+                  backgroundColor: 'rgba(0,212,170,0.12)',
+                  borderWidth: 2.5,
+                  fill: true,
+                  tension: 0.4,
+                  pointBackgroundColor: c.teal,
+                  pointBorderColor: isDark ? '#152233' : '#fff',
+                  pointBorderWidth: 2,
+                  pointRadius: 5,
+                  pointHoverRadius: 7
+                },
+                {
+                  label: 'Pending',
+                  data: pendDataDisplay,
+                  borderColor: c.red,
+                  backgroundColor: 'rgba(255,71,87,0.08)',
+                  borderWidth: 2.5,
+                  fill: true,
+                  tension: 0.4,
+                  pointBackgroundColor: c.red,
+                  pointBorderColor: isDark ? '#152233' : '#fff',
+                  pointBorderWidth: 2,
+                  pointRadius: 5,
+                  pointHoverRadius: 7
+                }
+              ]
+            },
+            options: {
+              ...chartDefaults,
+              scales: {
+                x: {
+                  ticks: { color: c.txt2, font: { family: 'DM Sans', size: 11 } },
+                  grid: { color: c.grid, drawBorder: false }
+                },
+                y: {
+                  ticks: { color: c.txt2, font: { family: 'DM Sans', size: 11 }, stepSize: 1 },
+                  grid: { color: c.grid, drawBorder: false },
+                  beginAtZero: true
+                }
+              },
+              onClick: function (evt, elements) {
+                if (elements && elements.length > 0) {
+                  const datasetIdx = elements[0].datasetIndex;
+                  const label = datasetIdx === 0 ? 'Dispatched' : 'Pending';
+                  navigateFromChart('dispatch', label, null);
+                }
+              },
+              onHover: function (evt, elements) {
+                evt.native.target.style.cursor = elements && elements.length > 0 ? 'pointer' : 'default';
+              }
+            }
+          });
+        } catch (err) { console.error('chartDispatch init error:', err); }
+      }
+
+      if (document.getElementById('chartTrend')) {
+        try {
+          var trendDataDisplay = trendData.every(function (v) { return v === 0; }) ? [0, 0, 0, 0, 0, 0, 0] : trendData;
+          charts.trend = new Chart(document.getElementById('chartTrend'), {
+            type: 'line',
+            data: { labels: dayLabels, datasets: [{ label: 'Entries Added', data: trendDataDisplay, borderColor: c.blue, backgroundColor: 'rgba(26,111,255,0.1)', borderWidth: 2.5, fill: true, tension: 0.4, pointBackgroundColor: c.blue, pointRadius: 5, pointHoverRadius: 7 }] },
+            options: {
+              ...chartDefaults,
+              scales: {
+                x: {
+                  ticks: { color: c.txt2, font: { family: 'DM Sans', size: 11 } },
+                  grid: { color: c.grid, drawBorder: false }
+                },
+                y: {
+                  ticks: { color: c.txt2, font: { family: 'DM Sans', size: 11 }, stepSize: 1 },
+                  grid: { color: c.grid, drawBorder: false },
+                  beginAtZero: true
+                }
+              },
+              onClick: function (evt, elements) {
+                if (elements && elements.length > 0) {
+                  const idx = elements[0].index;
+                  navigateFromChart('trend', dayLabels[idx], trendData[idx]);
+                }
+              },
+              onHover: function (evt, elements) {
+                evt.native.target.style.cursor = elements && elements.length > 0 ? 'pointer' : 'default';
+              }
+            }
+          });
+        } catch (err) { console.error('chartTrend init error:', err); }
+      }
+    }
+
+
+    // ========================
+    // CHART NAVIGATION (Click to Filter)
+    // ========================
+    function navigateFromChart(chartType, label, value) {
+      if (!label && value === undefined) return;
+
+      // Get nav element safely
+      function getNav(page) {
+        return document.querySelector('.nav-item[data-page="' + page + '"]');
+      }
+
+      if (chartType === 'status') {
+        pendingFilter = { page: 'orders', filterId: 'order-filter-status', filterValue: label, filterFunc: 'filterOrders' };
+        navigate('orders', getNav('orders'));
+      }
+      else if (chartType === 'priority') {
+        pendingFilter = { page: 'orders', filterId: 'order-filter-priority', filterValue: label, filterFunc: 'filterOrders' };
+        navigate('orders', getNav('orders'));
+      }
+      else if (chartType === 'followups') {
+        navigate('followups', getNav('followups'));
+        showToast('🔍 Follow-ups page opened', 'info');
+      }
+      else if (chartType === 'dispatch') {
+        var dispatchVal = label === 'Dispatched' ? 'Completed' : (label === 'Pending' ? 'Pending' : '');
+        if (dispatchVal) {
+          pendingFilter = { page: 'dispatch', filterId: 'dispatch-filter', filterValue: dispatchVal, filterFunc: 'filterDispatch' };
+        }
+        navigate('dispatch', getNav('dispatch'));
+      }
+      else if (chartType === 'trend') {
+        navigate('daily', getNav('daily'));
+        showToast('📊 Productivity trend: ' + label + ' (' + value + ' entries)', 'info');
+      }
+    }
+
+    // ========================
+    // BADGE HELPERS
+    // ========================
+    function statusBadge(s) {
+      const m = { 'Pending': 'badge-pending', 'In Progress': 'badge-progress', 'Completed': 'badge-completed', 'Delayed': 'badge-delayed', 'On Hold': 'badge-hold', 'Cancelled': 'badge-hold' };
+      return `<span class="badge ${m[s] || 'badge-pending'}">${s || '—'}</span>`;
+    }
+    function priorityBadge(p) {
+      const m = { 'Low': 'badge-partial', 'Medium': 'badge-progress', 'High': 'badge-urgent', 'Urgent': 'badge-delayed' };
+      return `<span class="badge ${m[p] || 'badge-hold'}">${p || '—'}</span>`;
+    }
+    function fuBadge(f) {
+      const m = { 'Pending': 'badge-pending', 'Done': 'badge-completed', 'Escalated': 'badge-escalated', 'Not Required': 'badge-hold' };
+      return `<span class="badge ${m[f] || 'badge-hold'}">${f || '—'}</span>`;
+    }
+    function dispatchBadge(d) {
+      const m = { 'Not Started': 'badge-pending', 'Partial': 'badge-partial', 'Completed': 'badge-completed', 'Pending': 'badge-pending', 'In Transit': 'badge-progress' };
+      return `<span class="badge ${m[d] || 'badge-hold'}">${d || '—'}</span>`;
+    }
+
+    // ========================
+    // FORM MANAGEMENT
+    // ========================
+    let editId = null;
+
+    function submitEntry() {
+      const v = (id) => document.getElementById(id).value.trim();
+      if (!v('f-client') || !v('f-project') || !v('f-date')) {
+        showToast('Please fill required fields: Date, Client, Project', 'error'); return;
+      }
+      const entry = {
+        id: editId || 'e' + Date.now(),
+        date: v('f-date'), clientName: v('f-client'), projectName: v('f-project'),
+        orderStatus: v('f-order-status'), dispatchStatus: v('f-dispatch-status'),
+        priority: v('f-priority'), factoryUpdate: v('f-factory'),
+        followUpStatus: v('f-followup'), expectedDelivery: v('f-delivery'),
+        remarks: v('f-remarks'), createdAt: editId ? (DB.entries.find(e => e.id === editId) || {}).createdAt : Date.now(),
+        updatedAt: Date.now()
+      };
+
+      if (editId) {
+        const idx = DB.entries.findIndex(e => e.id === editId);
+        DB.entries[idx] = entry;
+        logActivity('blue', `Entry updated: <strong>${entry.clientName}</strong> – ${entry.projectName}`, `Status: ${entry.orderStatus} | Priority: ${entry.priority}`);
+        showToast(`Entry updated for ${entry.clientName}`, 'success');
+      } else {
+        DB.entries.unshift(entry);
+        logActivity('blue', `Entry added: <strong>${entry.clientName}</strong> – ${entry.projectName}`, `Status: ${entry.orderStatus} | Priority: ${entry.priority}`);
+        if (entry.priority === 'Urgent') logActivity('orange', `Urgent task flagged: <strong>${entry.clientName}</strong>`, entry.projectName);
+        if (entry.orderStatus === 'Delayed') logActivity('red', `Delay recorded: <strong>${entry.clientName}</strong>`, entry.projectName);
+        if (entry.dispatchStatus === 'Completed') logActivity('teal', `Dispatch completed: <strong>${entry.clientName}</strong>`, entry.projectName);
+        showToast(`Entry added for ${entry.clientName}`, 'success');
+      }
+      save();
+      cancelEdit();
+      clearForm();
+      renderPage(currentPage);
+      updateKPIs();
+      destroyCharts();
+      setTimeout(initCharts, 100);
+    }
+
+    function clearForm() {
+      ['f-client', 'f-project', 'f-factory', 'f-delivery', 'f-remarks'].forEach(id => document.getElementById(id).value = '');
+      ['f-order-status', 'f-dispatch-status', 'f-priority', 'f-followup'].forEach(id => document.getElementById(id).selectedIndex = 0);
+      document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+    }
+
+    function editEntry(id) {
+      const e = DB.entries.find(x => x.id === id);
+      if (!e) return;
+      editId = id;
+      navigate('daily', document.querySelector('[data-page="daily"]'));
+      const s = (eid, val) => { const el = document.getElementById(eid); if (el) el.value = val || ''; };
+      s('f-date', e.date); s('f-client', e.clientName); s('f-project', e.projectName);
+      s('f-order-status', e.orderStatus); s('f-dispatch-status', e.dispatchStatus);
+      s('f-priority', e.priority); s('f-factory', e.factoryUpdate);
+      s('f-followup', e.followUpStatus); s('f-delivery', e.expectedDelivery); s('f-remarks', e.remarks);
+      document.getElementById('form-mode-label').textContent = 'Edit Entry';
+      document.getElementById('form-edit-id').textContent = `ID: ${id}`;
+      document.getElementById('submit-btn-label').textContent = 'Update Entry';
+      document.getElementById('cancel-edit-btn').style.display = 'inline-flex';
+      window.scrollTo(0, 0);
+    }
+
+    function cancelEdit() {
+      editId = null;
+      document.getElementById('form-mode-label').textContent = 'Add New Entry';
+      document.getElementById('form-edit-id').textContent = '';
+      document.getElementById('submit-btn-label').textContent = 'Add Entry';
+      document.getElementById('cancel-edit-btn').style.display = 'none';
+    }
+
+    function deleteEntry(id) {
+      const e = DB.entries.find(x => x.id === id);
+      if (!e) return;
+      if (!confirm(`Delete entry for "${e.clientName} – ${e.projectName}"?`)) return;
+      DB.entries = DB.entries.filter(x => x.id !== id);
+      logActivity('red', `Entry deleted: <strong>${e.clientName}</strong> – ${e.projectName}`, 'Removed from tracker');
+      save();
+      renderPage(currentPage);
+      updateKPIs();
+      destroyCharts();
+      setTimeout(initCharts, 100);
+      showToast('Entry deleted', 'info');
+    }
+
+    // ========================
+    // TABLE RENDERING
+    // ========================
+    let sortKey = 'date', sortDir = -1;
+    let filteredData = [];
+
+    function sortTable(key) {
+      if (sortKey === key) sortDir *= -1;
+      else { sortKey = key; sortDir = -1; }
+      renderTable();
+    }
+
+    function filterTable() {
+      renderTable();
+    }
+
+    function renderTable() {
+      const search = (document.getElementById('search-input') || {}).value?.toLowerCase() || '';
+      const fStatus = (document.getElementById('filter-status') || {}).value || '';
+      const fPriority = (document.getElementById('filter-priority') || {}).value || '';
+      const fFu = (document.getElementById('filter-followup') || {}).value || '';
+
+      filteredData = DB.entries.filter(e => {
+        const txt = [e.clientName, e.projectName, e.remarks, e.factoryUpdate].join(' ').toLowerCase();
+        return (!search || txt.includes(search)) &&
+          (!fStatus || e.orderStatus === fStatus) &&
+          (!fPriority || e.priority === fPriority) &&
+          (!fFu || e.followUpStatus === fFu);
+      }).sort((a, b) => {
+        const av = a[sortKey] || '', bv = b[sortKey] || '';
+        return av < bv ? sortDir : av > bv ? -sortDir : 0;
+      });
+
+      const tbody = document.getElementById('main-tbody');
+      if (!tbody) return;
+      if (filteredData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11"><div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No entries found</div><div class="empty-sub">Try changing your filters</div></div></td></tr>`;
+        return;
+      }
+      tbody.innerHTML = filteredData.map(e => {
+        const isDelayed = e.orderStatus === 'Delayed';
+        const isUrgent = e.priority === 'Urgent';
+        const rowClass = isDelayed ? 'delayed-row' : isUrgent ? 'urgent-row' : '';
+        const today = new Date().toISOString().split('T')[0];
+        const ddStr = e.expectedDelivery ? (e.expectedDelivery < today && e.orderStatus !== 'Completed' ? `<span style="color:var(--danger);font-weight:700">${e.expectedDelivery} ⚠</span>` : e.expectedDelivery) : '—';
+        return `<tr class="${rowClass}">
+      <td>${e.date || '—'}</td>
+      <td><strong>${e.clientName || '—'}</strong></td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${e.projectName}">${e.projectName || '—'}</td>
+      <td>${statusBadge(e.orderStatus)}</td>
+      <td>${dispatchBadge(e.dispatchStatus)}</td>
+      <td>${priorityBadge(e.priority)}</td>
+      <td>${fuBadge(e.followUpStatus)}</td>
+      <td style="white-space:nowrap">${ddStr}</td>
+      <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--txt2)" title="${e.factoryUpdate}">${e.factoryUpdate || '—'}</td>
+      <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--txt2)" title="${e.remarks}">${e.remarks || '—'}</td>
+      <td><div class="td-actions"><button class="act-btn edit" onclick="editEntry('${e.id}')">✏ Edit</button><button class="act-btn del" onclick="deleteEntry('${e.id}')">✕</button></div></td>
+    </tr>`;
+      }).join('');
+    }
+
+    // ========================
+    // DASHBOARD RENDER
+    // ========================
+    function renderDashboard() {
+      updateKPIs();
+      // Re-initialize charts when dashboard becomes visible
+      destroyCharts();
+      // Wait for CSS animations and layout to complete
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          setTimeout(initCharts, 300);
+        });
+      });
+      const recent = DB.entries.slice(0, 5);
+      const wrap = document.getElementById('dashboard-recent-table');
+      if (!wrap) return;
+      if (recent.length === 0) {
+        wrap.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No entries yet</div></div>`;
+        return;
+      }
+      wrap.innerHTML = `<table>
+    <thead><tr><th>Date</th><th>Client</th><th>Project</th><th>Order Status</th><th>Priority</th><th>Follow-up</th><th>Remarks</th></tr></thead>
+    <tbody>${recent.map(e => `<tr class="${e.orderStatus === 'Delayed' ? 'delayed-row' : e.priority === 'Urgent' ? 'urgent-row' : ''}">
+      <td>${e.date || '—'}</td><td><strong>${e.clientName}</strong></td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.projectName}</td>
+      <td>${statusBadge(e.orderStatus)}</td><td>${priorityBadge(e.priority)}</td>
+      <td>${fuBadge(e.followUpStatus)}</td>
+      <td style="font-size:12px;color:var(--txt2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.remarks || '—'}</td>
+    </tr>`).join('')}</tbody></table>`;
+    }
+
+    // ========================
+    // ORDERS PAGE
+    // ========================
+    function renderOrders() {
+      const k = calcKPIs();
+      const row = document.getElementById('order-stats-row');
+      if (row) row.innerHTML = [
+        { n: k.total, l: 'Total', c: 'var(--blue)' }, { n: k.pending, l: 'Pending', c: 'var(--warn)' },
+        { n: k.completed, l: 'Completed', c: 'var(--success)' }, { n: k.delayed, l: 'Delayed', c: 'var(--danger)' },
+        { n: DB.entries.filter(x => x.orderStatus === 'In Progress').length, l: 'In Progress', c: 'var(--blue2)' }
+      ].map(s => `<div class="stat-pill"><span class="stat-pill-num" style="color:${s.c}">${s.n}</span>${s.l}</div>`).join('');
+      filterOrders();
+    }
+
+    function filterOrders() {
+      const search = (document.getElementById('order-search') || {}).value?.toLowerCase() || '';
+      const fs = (document.getElementById('order-filter-status') || {}).value || '';
+      const fp = (document.getElementById('order-filter-priority') || {}).value || '';
+      const data = DB.entries.filter(e => {
+        const txt = [e.clientName, e.projectName].join(' ').toLowerCase();
+        return (!search || txt.includes(search)) && (!fs || e.orderStatus === fs) && (!fp || e.priority === fp);
+      });
+      const tbody = document.getElementById('orders-tbody');
+      if (!tbody) return;
+      const today = new Date().toISOString().split('T')[0];
+      tbody.innerHTML = data.map(e => {
+        const overdue = e.expectedDelivery && e.expectedDelivery < today && e.orderStatus !== 'Completed';
+        const isDone = e.orderStatus === 'Completed';
+        return `<tr class="${e.orderStatus === 'Delayed' ? 'delayed-row' : e.priority === 'Urgent' ? 'urgent-row' : ''}">
+      <td>${e.date || '—'}</td><td><strong>${e.clientName}</strong></td>
+      <td>${e.projectName}</td><td>${statusBadge(e.orderStatus)}</td>
+      <td>${priorityBadge(e.priority)}</td>
+      <td style="${overdue ? 'color:var(--danger);font-weight:700' : 'white-space:nowrap'}">${e.expectedDelivery || '—'}${overdue ? ' ⚠' : ''}</td>
+      <td>${dispatchBadge(e.dispatchStatus)}</td>
+      <td style="font-size:12px;color:var(--txt2);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.remarks || '—'}</td>
+      <td><div class="td-actions">
+        <button class="act-btn edit" onclick="editEntry('${e.id}')">✏ Edit</button>
+        ${!isDone ? `<button class="act-btn" style="background:rgba(46,213,115,.15);color:var(--success)" onclick="markOrderDone('${e.id}')">✅ Done</button>` : ''}
+      </div></td>
+    </tr>`;
+      }).join('') || `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📦</div><div class="empty-title">No orders</div></div></td></tr>`;
+    }
+
+    // ========================
+    // FOLLOWUPS PAGE
+    // ========================
+    function renderFollowups() {
+      const pending = DB.entries.filter(x => x.followUpStatus === 'Pending');
+      const escalated = DB.entries.filter(x => x.followUpStatus === 'Escalated');
+      const delayed = DB.entries.filter(x => x.orderStatus === 'Delayed');
+      const today = new Date().toISOString().split('T')[0];
+      const doneToday = DB.entries.filter(x => x.date === today && x.followUpStatus === 'Done').length;
+
+      const an1 = document.getElementById('fu-pending-num');
+      const an2 = document.getElementById('fu-done-num');
+      if (an1) an1.textContent = pending.length;
+      if (an2) an2.textContent = doneToday;
+
+      function fuCards(list, emptyMsg) {
+        if (!list.length) return `<div class="empty-state" style="grid-column:span 3"><div class="empty-icon">✅</div><div class="empty-title">${emptyMsg}</div></div>`;
+        return list.map(e => `<div class="fu-card">
+      <div class="fu-card-hdr">
+        <div><div class="fu-client">${e.clientName}</div><div class="fu-project">${e.projectName}</div></div>
+        ${fuBadge(e.followUpStatus)}
+      </div>
+      <div class="fu-meta">
+        <span>📦 ${statusBadge(e.orderStatus)}</span>
+        <span>🚚 ${dispatchBadge(e.dispatchStatus)}</span>
+        <span>${priorityBadge(e.priority)}</span>
+      </div>
+      ${e.factoryUpdate ? `<div style="font-size:11.5px;color:var(--txt3);margin-top:8px">🏭 ${e.factoryUpdate}</div>` : ''}
+      <div class="fu-date">📅 EDD: ${e.expectedDelivery || 'Not set'} &nbsp;|&nbsp; Updated: ${e.date || '—'}</div>
+      ${e.remarks ? `<div style="font-size:12px;color:var(--txt2);margin-top:6px;font-style:italic">"${e.remarks}"</div>` : ''}
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        ${e.followUpStatus !== 'Done' ? `<button class="act-btn" style="background:rgba(46,213,115,.15);color:var(--success);font-size:12px;padding:6px 12px" onclick="markFollowupDone('${e.id}')">✅ Mark Done</button>` : ''}
+        ${e.followUpStatus !== 'Escalated' ? `<button class="act-btn" style="background:rgba(139,92,246,.15);color:#8b5cf6;font-size:12px;padding:6px 12px" onclick="markEscalated('${e.id}')">🔺 Escalate</button>` : ''}
+        <button class="act-btn edit" style="font-size:12px;padding:6px 12px" onclick="editEntry('${e.id}')">✏ Edit</button>
+      </div>
+    </div>`).join('');
+      }
+
+      const g1 = document.getElementById('fu-pending-grid');
+      const g2 = document.getElementById('fu-escalated-grid');
+      const g3 = document.getElementById('fu-delayed-grid');
+      if (g1) g1.innerHTML = fuCards(pending, 'No pending follow-ups');
+      if (g2) g2.innerHTML = fuCards(escalated, 'No escalated cases');
+      if (g3) g3.innerHTML = fuCards(delayed, 'No factory delays');
+    }
+
+    // ========================
+    // DISPATCH PAGE
+    // ========================
+    function renderDispatch() {
+      const e = DB.entries;
+      const row = document.getElementById('dispatch-stats-row');
+      if (row) row.innerHTML = [
+        { n: e.filter(x => x.dispatchStatus === 'Completed').length, l: 'Completed', c: 'var(--success)' },
+        { n: e.filter(x => x.dispatchStatus === 'In Transit').length, l: 'In Transit', c: 'var(--accent)' },
+        { n: e.filter(x => x.dispatchStatus === 'Partial').length, l: 'Partial', c: 'var(--warn)' },
+        { n: e.filter(x => x.dispatchStatus === 'Pending' || x.dispatchStatus === 'Not Started').length, l: 'Pending', c: 'var(--danger)' },
+      ].map(s => `<div class="stat-pill"><span class="stat-pill-num" style="color:${s.c}">${s.n}</span>${s.l}</div>`).join('');
+      filterDispatch();
+    }
+
+    function filterDispatch() {
+      const search = (document.getElementById('dispatch-search') || {}).value?.toLowerCase() || '';
+      const fs = (document.getElementById('dispatch-filter') || {}).value || '';
+      const data = DB.entries.filter(e => {
+        const txt = [e.clientName, e.projectName].join(' ').toLowerCase();
+        return (!search || txt.includes(search)) && (!fs || e.dispatchStatus === fs);
+      });
+      const tbody = document.getElementById('dispatch-tbody');
+      if (!tbody) return;
+      tbody.innerHTML = data.map(e => `<tr class="${e.priority === 'Urgent' ? 'urgent-row' : ''}">
+    <td>${e.date || '—'}</td><td><strong>${e.clientName}</strong></td>
+    <td>${e.projectName}</td><td>${dispatchBadge(e.dispatchStatus)}</td>
+    <td>${statusBadge(e.orderStatus)}</td>
+    <td style="font-size:12px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt2)">${e.factoryUpdate || '—'}</td>
+    <td style="white-space:nowrap">${e.expectedDelivery || '—'}</td>
+    <td>${priorityBadge(e.priority)}</td>
+    <td><div class="td-actions">
+      <button class="act-btn edit" onclick="editEntry('${e.id}')">✏ Edit</button>
+      ${e.dispatchStatus !== 'Completed' ? `<button class="act-btn" style="background:rgba(0,212,170,.15);color:var(--accent)" onclick="markDispatched('${e.id}')">🚚 Dispatched</button>` : ''}
+    </div></td>
+  </tr>`).join('') || `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🚚</div><div class="empty-title">No dispatch records</div></div></td></tr>`;
+    }
+
+    // ========================
+    // ACTIVITY LOG
+    // ========================
+    function logActivity(type, text, sub = '') {
+      DB.activity.unshift({ id: 'a' + Date.now(), time: new Date().toISOString(), type, text, sub });
+      DB.activity = DB.activity.slice(0, 100);
+      save();
+    }
+
+    function renderActivity() {
+      const list = document.getElementById('activity-list');
+      if (!list) return;
+      if (!DB.activity.length) {
+        list.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No activity yet</div></div>`;
+        return;
+      }
+      list.innerHTML = DB.activity.map(a => {
+        const d = new Date(a.time);
+        const timeStr = d.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+        return `<div class="activity-item">
+      <div class="activity-dot ${a.type}"></div>
+      <div class="activity-time">${timeStr}</div>
+      <div><div class="activity-text">${a.text}</div>${a.sub ? `<div class="activity-sub">${a.sub}</div>` : ''}</div>
+    </div>`;
+      }).join('');
+    }
+
+    function clearActivity() {
+      if (!confirm('Clear all activity logs?')) return;
+      DB.activity = [];
+      save();
+      renderActivity();
+      showToast('Activity log cleared', 'info');
+    }
+
+    // ========================
+    // ANALYTICS
+    // ========================
+    function renderAnalytics() {
+      const e = DB.entries;
+      const today = new Date().toISOString().split('T')[0];
+      const weekStart = new Date(); weekStart.setDate(weekStart.getDate() - 7);
+      const monthStart = new Date(); monthStart.setDate(1);
+
+      const todayCount = e.filter(x => x.date === today).length;
+      const weekCount = e.filter(x => new Date(x.date) >= weekStart).length;
+      const monthCount = e.filter(x => new Date(x.date) >= monthStart).length;
+      const total = e.length || 1;
+      const compRate = Math.round(e.filter(x => x.orderStatus === 'Completed').length / total * 100);
+      const fuRate = Math.round(e.filter(x => x.followUpStatus === 'Done').length / Math.max(e.filter(x => x.followUpStatus !== 'Not Required').length, 1) * 100);
+      const dispRate = Math.round(e.filter(x => x.dispatchStatus === 'Completed').length / total * 100);
+      const delRate = Math.round(e.filter(x => x.orderStatus === 'Delayed').length / total * 100);
+
+      const maxDay = Math.max(todayCount, 5);
+      const maxWeek = Math.max(weekCount, 10);
+      const maxMonth = Math.max(monthCount, 30);
+
+      [['an-today', todayCount], ['an-week', weekCount], ['an-month', monthCount]].forEach(([id, v]) => { const el = document.getElementById(id); if (el) el.textContent = v; });
+      [['an-today-bar', todayCount / maxDay * 100], ['an-week-bar', weekCount / maxWeek * 100], ['an-month-bar', monthCount / maxMonth * 100]].forEach(([id, v]) => { const el = document.getElementById(id); if (el) setTimeout(() => el.style.width = v + '%', 100); });
+      [['pr-completion', compRate, 'pr-completion-bar'], ['pr-fu', fuRate, 'pr-fu-bar'], ['pr-dispatch', dispRate, 'pr-dispatch-bar'], ['pr-delay', delRate, 'pr-delay-bar']].forEach(([vid, v, bid]) => {
+        const vel = document.getElementById(vid); const bel = document.getElementById(bid);
+        if (vel) vel.textContent = v + '%';
+        if (bel) setTimeout(() => bel.style.width = v + '%', 200);
+      });
+      generateSummary();
+    }
+
+    function generateSummary() {
+      const e = DB.entries;
+      const k = calcKPIs();
+      const topClient = (() => {
+        const freq = {}; e.forEach(x => { if (x.clientName) freq[x.clientName] = (freq[x.clientName] || 0) + 1; });
+        return Object.entries(freq).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
+      })();
+      const urgent = e.filter(x => x.priority === 'Urgent' || x.followUpStatus === 'Escalated');
+      const overdue = e.filter(x => { const t = new Date().toISOString().split('T')[0]; return x.expectedDelivery && x.expectedDelivery < t && x.orderStatus !== 'Completed'; });
+      const el = document.getElementById('smart-summary');
+      if (!el) return;
+      el.innerHTML = `
+    <div style="background:var(--border);border-radius:8px;padding:14px;margin-bottom:12px;font-size:12.5px">
+      <strong style="color:var(--blue2)">📊 Operations Summary</strong><br><br>
+      You are currently managing <strong>${k.total} total orders</strong> across <strong>${k.clients} clients</strong>. 
+      Order completion rate stands at <strong>${Math.round(k.completed / Math.max(k.total, 1) * 100)}%</strong>. 
+      Most active client: <strong>${topClient}</strong>.<br><br>
+      <strong style="color:var(--warn)">⚠ Action Items:</strong><br>
+      • <strong>${k.pending}</strong> orders are pending immediate attention.<br>
+      • <strong>${k.delayed}</strong> orders are delayed — factory coordination needed.<br>
+      • <strong>${urgent.length}</strong> entries are urgent or escalated.<br>
+      • <strong>${overdue.length}</strong> orders have missed expected delivery dates.<br><br>
+      <strong style="color:var(--success)">✅ Wins:</strong><br>
+      • <strong>${k.completed}</strong> orders completed successfully.<br>
+      • <strong>${k.dispatched}</strong> dispatches finished.<br>
+      • <strong>${k.fuToday}</strong> follow-ups completed today.
+    </div>
+    <div style="font-size:11.5px;color:var(--txt3)">Last updated: ${new Date().toLocaleString('en-IN')}</div>`;
+    }
+
+    // ========================
+    // REMINDERS
+    // ========================
+    function addReminder() {
+      const title = document.getElementById('rem-title').value.trim();
+      const dt = document.getElementById('rem-datetime').value;
+      const type = document.getElementById('rem-type').value;
+      const desc = document.getElementById('rem-desc').value.trim();
+      if (!title) { showToast('Please enter a title', 'error'); return; }
+      DB.reminders.push({ id: 'r' + Date.now(), title, datetime: dt || new Date().toISOString(), type, desc });
+      save();
+      ['rem-title', 'rem-datetime', 'rem-desc'].forEach(id => document.getElementById(id).value = '');
+      renderReminders();
+      updateKPIs();
+      showToast('Reminder set!', 'success');
+    }
+
+    function deleteReminder(id) {
+      DB.reminders = DB.reminders.filter(r => r.id !== id);
+      save();
+      renderReminders();
+      updateKPIs();
+    }
+
+    function renderReminders() {
+      const list = document.getElementById('reminder-list');
+      if (!list) return;
+      if (!DB.reminders.length) {
+        list.innerHTML = `<div class="empty-state"><div class="empty-icon">⏰</div><div class="empty-title">No reminders set</div></div>`;
+        return;
+      }
+      const icons = { info: 'ℹ️', warn: '⚡', danger: '🚨', success: '✅' };
+      list.innerHTML = DB.reminders.map(r => `<div class="reminder-item ${r.type}">
+    <div class="reminder-icon">${icons[r.type] || '🔔'}</div>
+    <div class="reminder-content">
+      <div class="reminder-title">${r.title}</div>
+      ${r.desc ? `<div class="reminder-desc">${r.desc}</div>` : ''}
+      <div class="reminder-time">📅 ${r.datetime ? new Date(r.datetime).toLocaleString('en-IN') : 'No date set'}</div>
+    </div>
+    <button class="reminder-del" onclick="deleteReminder('${r.id}')">✕</button>
+  </div>`).join('');
+    }
+
+    function openReminderModal() { document.getElementById('reminder-modal').classList.add('open'); }
+    function closeReminderModal() { document.getElementById('reminder-modal').classList.remove('open'); }
+
+    function addQuickReminder() {
+      const title = document.getElementById('qrem-title').value.trim();
+      const desc = document.getElementById('qrem-desc').value.trim();
+      const type = document.getElementById('qrem-type').value;
+      if (!title) { showToast('Enter a title', 'error'); return; }
+      DB.reminders.push({ id: 'r' + Date.now(), title, datetime: new Date().toISOString(), type, desc });
+      save();
+      closeReminderModal();
+      updateKPIs();
+      showToast('Quick reminder added!', 'success');
+    }
+
+    // ========================
+    // TOAST NOTIFICATIONS
+    // ========================
+    function showToast(msg, type = 'info') {
+      const icons = { success: '✅', error: '❌', info: 'ℹ️', warn: '⚡' };
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-msg">${msg}</span><button class="toast-close" onclick="this.parentElement.remove()">✕</button>`;
+      container.appendChild(toast);
+      setTimeout(() => { toast.classList.add('exit'); setTimeout(() => toast.remove(), 300); }, 3500);
+    }
+
+    // ========================
+    // EXPORT CSV
+    // ========================
+
+    // ========================
+    // EXCEL IMPORT & DATA SIMPLIFICATION
+    // ========================
+    let importRawData = [];
+    let importMappedData = [];
+    let importFilteredData = [];
+    let importColumnMap = {};
+    let importWorkbook = null;
+    let importSheetName = '';
+
+    const FIELD_MAP = {
+      'Date': ['date', 'dt', 'entry date', 'update date', 'created', 'date of entry', 'dated'],
+      'Client Name': ['client', 'client name', 'customer', 'customer name', 'party', 'buyer', 'clientname', 'client_name'],
+      'Project Name': ['project', 'project name', 'job', 'work', 'projectname', 'project_name', 'description'],
+      'Order Status': ['order status', 'status', 'orderstate', 'order_state', 'current status', 'work status'],
+      'Dispatch Status': ['dispatch', 'dispatch status', 'delivery status', 'shipment', 'dispatchstatus', 'dispatch_status'],
+      'Priority': ['priority', 'urgency', 'importance', 'prio', 'priority level'],
+      'Follow-up Status': ['followup', 'follow up', 'follow-up', 'followup status', 'follow_up', 'followupstatus', 'communication'],
+      'Expected Delivery': ['expected delivery', 'edd', 'delivery date', 'due date', 'deadline', 'target date', 'expected_delivery', 'delivery_date'],
+      'Factory Update': ['factory', 'factory update', 'production', 'manufacturing', 'factoryupdate', 'factory_update', 'plant status'],
+      'Remarks': ['remarks', 'notes', 'comments', 'description', 'remarks notes', 'additional info', 'remarksnotes']
+    };
+
+    function handleDrop(e) {
+      e.preventDefault();
+      const dropZone = document.getElementById('drop-zone');
+      dropZone.style.borderColor = 'var(--border)';
+      dropZone.style.background = 'transparent';
+      const files = e.dataTransfer.files;
+      if (files.length) processExcelFile(files[0]);
+    }
+
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      if (files.length) processExcelFile(files[0]);
+    }
+
+    function processExcelFile(file) {
+      const statusDiv = document.getElementById('upload-status');
+      const filenameDiv = document.getElementById('upload-filename');
+      const progressDiv = document.getElementById('upload-progress');
+
+      statusDiv.style.display = 'block';
+      filenameDiv.textContent = file.name;
+      progressDiv.textContent = 'Reading file...';
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          importWorkbook = XLSX.read(data, { type: 'array', cellDates: true });
+          importSheetName = importWorkbook.SheetNames[0];
+          const sheet = importWorkbook.Sheets[importSheetName];
+
+          progressDiv.textContent = 'Parsing rows...';
+          importRawData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+          if (importRawData.length < 2) {
+            showToast('File appears empty or has no data rows', 'error');
+            resetImport();
+            return;
+          }
+
+          progressDiv.textContent = 'Found ' + (importRawData.length - 1) + ' rows, ' + importRawData[0].length + ' columns';
+          setTimeout(function () {
+            statusDiv.style.display = 'none';
+            showColumnMapping();
+          }, 600);
+
+        } catch (err) {
+          showToast('Error reading Excel file: ' + err.message, 'error');
+          statusDiv.style.display = 'none';
+        }
+      };
+      reader.onerror = function () {
+        showToast('Failed to read file', 'error');
+        statusDiv.style.display = 'none';
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function cancelUpload() {
+      document.getElementById('upload-status').style.display = 'none';
+      resetImport();
+    }
+
+    function showColumnMapping() {
+      const headers = importRawData[0].map(function (h) { return String(h).trim().toLowerCase(); });
+      const grid = document.getElementById('mapping-grid');
+
+      importColumnMap = {};
+
+      grid.innerHTML = Object.keys(FIELD_MAP).map(function (field) {
+        const aliases = FIELD_MAP[field];
+        let matchedIdx = -1;
+        let matchedHeader = '';
+
+        for (let i = 0; i < headers.length; i++) {
+          const h = headers[i].toLowerCase().trim();
+          // First: exact match
+          if (aliases.indexOf(h) !== -1) { matchedIdx = i; matchedHeader = importRawData[0][i]; break; }
+        }
+        // Second pass: partial/substring match (only if no exact match found)
+        if (matchedIdx === -1) {
+          for (let i = 0; i < headers.length; i++) {
+            const h = headers[i].toLowerCase().trim();
+            for (let j = 0; j < aliases.length; j++) {
+              if (h.indexOf(aliases[j]) !== -1 || aliases[j].indexOf(h) !== -1) {
+                matchedIdx = i; matchedHeader = importRawData[0][i]; break;
+              }
+            }
+            if (matchedIdx !== -1) break;
+          }
+        }
+
+        if (matchedIdx !== -1) importColumnMap[field] = matchedIdx;
+
+        let options = '<option value="">-- Not mapped --</option>';
+        for (let i = 0; i < importRawData[0].length; i++) {
+          options += '<option value="' + i + '"' + (i === matchedIdx ? ' selected' : '') + '>' + (importRawData[0][i] || '(empty)') + '</option>';
+        }
+
+        let autoDetect = '';
+        if (matchedIdx !== -1) {
+          autoDetect = '<div style="font-size:11px;color:var(--success);margin-top:4px">✓ Auto-detected: "' + matchedHeader + '"</div>';
+        }
+
+        return '<div class="form-group">' +
+          '<label>' + field + '</label>' +
+          '<select id="map-' + field.replace(/\s+/g, '-') + '" onchange="updateColumnMap(\'' + field + '\',this.value)">' +
+          options +
+          '</select>' + autoDetect +
+          '</div>';
+      }).join('');
+
+      document.getElementById('mapping-section').style.display = 'block';
+      document.getElementById('preview-section').style.display = 'block';
+    }
+
+    function updateColumnMap(field, value) {
+      if (value === '' || value === null || value === undefined) delete importColumnMap[field];
+      else importColumnMap[field] = parseInt(value);
+    }
+
+    function simplifyValue(val, field) {
+      if (val === null || val === undefined || val === '') return '';
+      let str = String(val).trim();
+
+      if (field === 'Date' || field === 'Expected Delivery') {
+        if (val instanceof Date) return val.toISOString().split('T')[0];
+        const datePatterns = [
+          /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/,
+          /^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/
+        ];
+        for (let i = 0; i < datePatterns.length; i++) {
+          const m = str.match(datePatterns[i]);
+          if (m) {
+            let y = parseInt(m[3]); if (y < 100) y += 2000;
+            let d = parseInt(m[1]), mo = parseInt(m[2]);
+            if (d > 31) { let tmp = d; d = mo; mo = tmp; }
+            return y + '-' + String(mo).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+          }
+        }
+        if (typeof val === 'number' && val > 30000 && val < 50000) {
+          const epoch = new Date(1899, 11, 30);
+          const date = new Date(epoch.getTime() + val * 86400000);
+          return date.toISOString().split('T')[0];
+        }
+        return str;
+      }
+
+      if (field === 'Order Status') {
+        const s = str.toLowerCase();
+        if (s.indexOf('complete') !== -1 || s.indexOf('done') !== -1 || s.indexOf('finish') !== -1) return 'Completed';
+        if (s.indexOf('progress') !== -1 || s.indexOf('ongoing') !== -1 || s.indexOf('active') !== -1) return 'In Progress';
+        if (s.indexOf('delay') !== -1 || s.indexOf('late') !== -1 || s.indexOf('overdue') !== -1) return 'Delayed';
+        if (s.indexOf('hold') !== -1 || s.indexOf('pause') !== -1 || s.indexOf('stop') !== -1) return 'On Hold';
+        if (s.indexOf('cancel') !== -1 || s.indexOf('abort') !== -1) return 'Cancelled';
+        if (s.indexOf('pend') !== -1 || s.indexOf('wait') !== -1) return 'Pending';
+      }
+
+      if (field === 'Dispatch Status') {
+        const s = str.toLowerCase();
+        if (s.indexOf('complete') !== -1 || s.indexOf('done') !== -1 || s.indexOf('finish') !== -1) return 'Completed';
+        if (s.indexOf('transit') !== -1 || s.indexOf('ship') !== -1 || s.indexOf('on way') !== -1) return 'In Transit';
+        if (s.indexOf('partial') !== -1 || s.indexOf('some') !== -1 || s.indexOf('part') !== -1) return 'Partial';
+        if (s.indexOf('pend') !== -1 || s.indexOf('wait') !== -1) return 'Pending';
+        if (s.indexOf('not') !== -1 || s.indexOf('zero') !== -1 || s.indexOf('none') !== -1) return 'Not Started';
+      }
+
+      if (field === 'Priority') {
+        const s = str.toLowerCase();
+        if (s.indexOf('urgent') !== -1 || s.indexOf('critical') !== -1 || s.indexOf('emergency') !== -1) return 'Urgent';
+        if (s.indexOf('high') !== -1 || s.indexOf('important') !== -1) return 'High';
+        if (s.indexOf('medium') !== -1 || s.indexOf('normal') !== -1 || s.indexOf('moderate') !== -1) return 'Medium';
+        if (s.indexOf('low') !== -1 || s.indexOf('minor') !== -1 || s.indexOf('trivial') !== -1) return 'Low';
+      }
+
+      if (field === 'Follow-up Status') {
+        const s = str.toLowerCase();
+        if (s.indexOf('done') !== -1 || s.indexOf('complete') !== -1 || s.indexOf('finish') !== -1 || s.indexOf('closed') !== -1) return 'Done';
+        if (s.indexOf('escal') !== -1 || s.indexOf('raise') !== -1 || s.indexOf('higher') !== -1) return 'Escalated';
+        if (s.indexOf('not') !== -1 || s.indexOf('no') !== -1 || s.indexOf('none') !== -1) return 'Not Required';
+        if (s.indexOf('pend') !== -1 || s.indexOf('wait') !== -1 || s.indexOf('open') !== -1) return 'Pending';
+      }
+
+      return str;
+    }
+
+    function previewData() {
+      const mapped = mapAndSimplifyData();
+      const preview = mapped.slice(0, 5);
+      const wrap = document.getElementById('preview-table-wrap');
+
+      if (!preview.length) {
+        wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠</div><div class="empty-title">No valid data to preview</div></div>';
+        return;
+      }
+
+      const headers = ['Date', 'Client Name', 'Project Name', 'Order Status', 'Dispatch Status', 'Priority', 'Follow-up Status', 'Expected Delivery', 'Factory Update', 'Remarks'];
+      let html = '<table><thead><tr>';
+      for (let i = 0; i < headers.length; i++) html += '<th>' + headers[i] + '</th>';
+      html += '</tr></thead><tbody>';
+      for (let i = 0; i < preview.length; i++) {
+        html += '<tr>';
+        for (let j = 0; j < headers.length; j++) {
+          html += '<td>' + (preview[i][headers[j]] || '—') + '</td>';
+        }
+        html += '</tr>';
+      }
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+
+      showToast('Showing first ' + preview.length + ' rows', 'info');
+    }
+
+    function mapAndSimplifyData() {
+      const result = [];
+      for (let i = 1; i < importRawData.length; i++) {
+        const row = importRawData[i];
+        if (!row || row.every(function (cell) { return !cell; })) continue;
+
+        const entry = {};
+        for (let field in importColumnMap) {
+          const idx = importColumnMap[field];
+          if (idx !== undefined && idx >= 0 && idx < row.length) {
+            entry[field] = simplifyValue(row[idx], field);
+          }
+        }
+        if (entry['Client Name'] || entry['Project Name']) {
+          result.push(entry);
+        }
+      }
+      return result;
+    }
+
+    function processImport() {
+      importMappedData = mapAndSimplifyData();
+
+      if (!importMappedData.length) {
+        showToast('No valid data found after mapping. Check your column mappings.', 'error');
+        return;
+      }
+
+      importFilteredData = importMappedData.map(function (row, idx) {
+        return {
+          id: 'imp_' + Date.now() + '_' + idx,
+          date: row['Date'] || new Date().toISOString().split('T')[0],
+          clientName: row['Client Name'] || 'Unknown',
+          projectName: row['Project Name'] || 'Unknown',
+          orderStatus: row['Order Status'] || 'Pending',
+          dispatchStatus: row['Dispatch Status'] || 'Not Started',
+          priority: row['Priority'] || 'Medium',
+          followUpStatus: row['Follow-up Status'] || 'Pending',
+          expectedDelivery: row['Expected Delivery'] || '',
+          factoryUpdate: row['Factory Update'] || '',
+          remarks: row['Remarks'] || '',
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          _selected: true  // All rows selected by default
+        };
+      });
+
+      document.getElementById('import-results').style.display = 'block';
+      document.getElementById('imp-total').textContent = importMappedData.length;
+      document.getElementById('imp-imported').textContent = importMappedData.length;
+      document.getElementById('imp-skipped').textContent = Math.max(0, importRawData.length - 1 - importMappedData.length);
+      document.getElementById('imp-errors').textContent = 0;
+
+      // Clear any previous filters
+      const ids = ['import-search', 'import-filter-status', 'import-filter-priority', 'import-filter-dispatch'];
+      for (let i = 0; i < ids.length; i++) {
+        const el = document.getElementById(ids[i]);
+        if (el) el.value = '';
+      }
+
+      renderImportTable(importFilteredData);
+      showToast('Successfully mapped ' + importMappedData.length + ' rows! All selected by default.', 'success');
+      logActivity('teal', 'Excel imported: ' + importMappedData.length + ' rows mapped', 'File: uploaded');
+    }
+
+    function renderImportTable(data) {
+      const tbody = document.getElementById('import-tbody');
+      document.getElementById('import-total-count').textContent = data.length;
+      document.getElementById('import-filter-count').textContent = data.filter(function (x) { return x._selected; }).length;
+
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="12"><div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No data matches filters</div></div></td></tr>';
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      let html = '';
+      for (let i = 0; i < data.length; i++) {
+        const e = data[i];
+        const overdue = e.expectedDelivery && e.expectedDelivery < today && e.orderStatus !== 'Completed';
+        let rowClass = '';
+        if (e.orderStatus === 'Delayed') rowClass = 'delayed-row';
+        else if (e.priority === 'Urgent') rowClass = 'urgent-row';
+
+        html += '<tr class="' + rowClass + '" style="' + (e._selected ? '' : 'opacity:0.5') + '">';
+        html += '<td><input type="checkbox"' + (e._selected ? ' checked' : '') + ' onchange="toggleImportRow(\'' + e.id + '\')"></td>';
+        html += '<td>' + (e.date || '—') + '</td>';
+        html += '<td><strong>' + e.clientName + '</strong></td>';
+        html += '<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + e.projectName + '</td>';
+        html += '<td>' + statusBadge(e.orderStatus) + '</td>';
+        html += '<td>' + dispatchBadge(e.dispatchStatus) + '</td>';
+        html += '<td>' + priorityBadge(e.priority) + '</td>';
+        html += '<td>' + fuBadge(e.followUpStatus) + '</td>';
+        html += '<td style="' + (overdue ? 'color:var(--danger);font-weight:700' : 'white-space:nowrap') + '">' + (e.expectedDelivery || '—') + (overdue ? ' ⚠' : '') + '</td>';
+        html += '<td style="font-size:12px;color:var(--txt2);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (e.factoryUpdate || '—') + '</td>';
+        html += '<td style="font-size:12px;color:var(--txt2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (e.remarks || '—') + '</td>';
+        html += '</tr>';
+      }
+      tbody.innerHTML = html;
+    }
+
+    // Debounce timer for search
+    let filterTimer = null;
+    function debounceFilter() {
+      if (filterTimer) clearTimeout(filterTimer);
+      filterTimer = setTimeout(filterImported, 300);
+    }
+
+    function filterImported() {
+      const searchEl = document.getElementById('import-search');
+      const search = searchEl ? searchEl.value.trim().toLowerCase() : '';
+      const fStatus = document.getElementById('import-filter-status').value;
+      const fPriority = document.getElementById('import-filter-priority').value;
+      const fDispatch = document.getElementById('import-filter-dispatch').value;
+
+      // Filter: which rows MATCH the criteria (visible)
+      const visibleIds = new Set();
+      importMappedData.forEach(function (row) {
+        const textMatch = !search || [row.clientName, row.projectName, row.remarks, row.factoryUpdate].join(' ').toLowerCase().indexOf(search) !== -1;
+        const statusMatch = !fStatus || row.orderStatus === fStatus;
+        const priorityMatch = !fPriority || row.priority === fPriority;
+        const dispatchMatch = !fDispatch || row.dispatchStatus === fDispatch;
+        if (textMatch && statusMatch && priorityMatch && dispatchMatch) {
+          visibleIds.add(row.id);
+        }
+      });
+
+      // Update filtered data: preserve _selected state for visible rows, deselect hidden ones
+      importFilteredData = importMappedData.map(function (row) {
+        const isVisible = visibleIds.has(row.id);
+        return Object.assign({}, row, {
+          _selected: isVisible ? (row._selected !== false) : false
+        });
+      });
+
+      renderImportTable(importFilteredData);
+    }
+
+    function clearImportFilters() {
+      const ids = ['import-search', 'import-filter-status', 'import-filter-priority', 'import-filter-dispatch'];
+      for (let i = 0; i < ids.length; i++) {
+        const el = document.getElementById(ids[i]);
+        if (el) el.value = '';
+      }
+      // Reset all to selected
+      importFilteredData = importMappedData.map(function (row) {
+        return Object.assign({}, row, { _selected: true });
+      });
+      renderImportTable(importFilteredData);
+    }
+
+    function toggleImportRow(id) {
+      const row = importFilteredData.find(function (x) { return x.id === id; });
+      if (row) {
+        row._selected = !row._selected;
+        renderImportTable(importFilteredData);  // Re-render to update counts and "select all" state
+      }
+    }
+
+    function toggleSelectAll() {
+      const checked = document.getElementById('import-select-all').checked;
+      let changed = false;
+      for (let i = 0; i < importFilteredData.length; i++) {
+        if (importFilteredData[i]._selected !== checked) changed = true;
+        importFilteredData[i]._selected = checked;
+      }
+      if (changed) renderImportTable(importFilteredData);
+    }
+
+    function selectAllVisible() {
+      let changed = false;
+      for (let i = 0; i < importFilteredData.length; i++) {
+        if (!importFilteredData[i]._selected) changed = true;
+        importFilteredData[i]._selected = true;
+      }
+      if (changed) renderImportTable(importFilteredData);
+    }
+
+    function deselectAllVisible() {
+      let changed = false;
+      for (let i = 0; i < importFilteredData.length; i++) {
+        if (importFilteredData[i]._selected) changed = true;
+        importFilteredData[i]._selected = false;
+      }
+      if (changed) renderImportTable(importFilteredData);
+    }
+
+    function addFilteredToDashboard() {
+      const selected = importFilteredData.filter(function (x) { return x._selected; });
+      if (!selected.length) { showToast('No rows selected to import. Select at least one row.', 'warn'); return; }
+
+      let added = 0;
+      for (let i = 0; i < selected.length; i++) {
+        const cleanRow = Object.assign({}, selected[i]);
+        delete cleanRow._selected;
+        DB.entries.unshift(cleanRow);
+        added++;
+      }
+
+      save();
+      logActivity('green', 'Bulk import: ' + added + ' entries added from Excel', 'Client: ' + selected[0].clientName + ' etc.');
+      showToast(added + ' entries added to dashboard!', 'success');
+
+      updateKPIs();
+      renderPage(currentPage);
+      destroyCharts();
+      setTimeout(initCharts, 100);
+
+      resetImport();
+      navigate('daily', document.querySelector('[data-page="daily"]'));
+    }
+
+    function resetImport() {
+      importRawData = [];
+      importMappedData = [];
+      importFilteredData = [];
+      importColumnMap = {};
+      importWorkbook = null;
+      document.getElementById('mapping-section').style.display = 'none';
+      document.getElementById('preview-section').style.display = 'none';
+      document.getElementById('import-results').style.display = 'none';
+      document.getElementById('upload-status').style.display = 'none';
+      document.getElementById('excel-file-input').value = '';
+      document.getElementById('import-tbody').innerHTML = '<tr><td colspan="12"><div class="empty-state"><div class="empty-icon">📥</div><div class="empty-title">Import an Excel file to see data here</div></div></td></tr>';
+      // Clear filter inputs
+      const ids = ['import-search', 'import-filter-status', 'import-filter-priority', 'import-filter-dispatch'];
+      for (let i = 0; i < ids.length; i++) {
+        const el = document.getElementById(ids[i]);
+        if (el) el.value = '';
+      }
+    }
+
+    function exportImportedCSV() {
+      const data = importFilteredData.filter(function (x) { return x._selected; });
+      if (!data.length) { showToast('No selected data to export', 'warn'); return; }
+
+      const headers = ['Date', 'Client Name', 'Project Name', 'Order Status', 'Dispatch Status', 'Priority', 'Follow-up Status', 'Expected Delivery', 'Factory Update', 'Remarks'];
+      const rows = data.map(function (e) {
+        return [e.date, e.clientName, e.projectName, e.orderStatus, e.dispatchStatus, e.priority, e.followUpStatus, e.expectedDelivery, e.factoryUpdate, e.remarks].map(function (v) {
+          return '"' + String(v || '').replace(/"/g, '""') + '"';
+        });
+      });
+      const csv = [headers.join(','), rows.map(function (r) { return r.join(','); }).join('\n')].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url;
+      a.download = 'KEI_Import_Filtered_' + new Date().toISOString().split('T')[0] + '.csv';
+      a.click(); URL.revokeObjectURL(url);
+      showToast('Exported ' + data.length + ' filtered rows', 'success');
+    }
+
+    // Update PAGE_TITLES to include import
+    PAGE_TITLES.import = 'Import Excel Data';
+
+    function exportCSV() {
+      const data = filteredData.length ? filteredData : DB.entries;
+      if (!data.length) { showToast('No data to export', 'warn'); return; }
+      const headers = ['Date', 'Client Name', 'Project Name', 'Order Status', 'Dispatch Status', 'Priority', 'Follow-up Status', 'Expected Delivery', 'Factory Update', 'Remarks'];
+      const rows = data.map(e => [e.date, e.clientName, e.projectName, e.orderStatus, e.dispatchStatus, e.priority, e.followUpStatus, e.expectedDelivery, e.factoryUpdate, e.remarks].map(v => `"${(v || '').replace(/"/g, '""')}"`));
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url;
+      a.download = `KEI_Execution_Dashboard_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+      showToast(`Exported ${data.length} entries`, 'success');
+      logActivity('teal', `CSV exported`, `${data.length} entries`);
+      save();
+    }
+
+    // ========================
+    // SCROLL TO TOP
+    // ========================
+    window.addEventListener('scroll', () => {
+      const btn = document.getElementById('scroll-top');
+      btn.classList.toggle('visible', window.scrollY > 300);
+    });
+
+    // ========================
+    // REMINDER ALERTS
+    // ========================
+    function checkReminders() {
+      const now = new Date();
+      DB.reminders.forEach(r => {
+        if (r.datetime && !r.alerted) {
+          const dt = new Date(r.datetime);
+          if (dt <= now) { showToast(`🔔 Reminder: ${r.title}`, r.type === 'danger' ? 'error' : r.type === 'warn' ? 'warn' : 'info'); r.alerted = true; }
+        }
+      });
+      save();
+    }
+    setInterval(checkReminders, 60000);
+
+    // ========================
+    // CLOSE SIDEBAR ON OUTSIDE CLICK (MOBILE)
+    // ========================
+    document.addEventListener('click', e => {
+      if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('sidebar');
+        const hamburger = document.querySelector('.hamburger');
+        if (sidebar.classList.contains('mobile-open') && !sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+          sidebar.classList.remove('mobile-open');
+        }
+      }
+    });
+
+    // Close modal on overlay click
+    document.getElementById('reminder-modal').addEventListener('click', function (e) { if (e.target === this) closeReminderModal(); });
+
+    // ========================
+    // QUICK ACTION FUNCTIONS
+    // ========================
+    function markFollowupDone(id) {
+      const e = DB.entries.find(x => x.id === id);
+      if (!e) return;
+      e.followUpStatus = 'Done';
+      e.updatedAt = Date.now();
+      save();
+      logActivity('green', `Follow-up marked done: <strong>${e.clientName}</strong>`, e.projectName);
+      showToast(`Follow-up done — ${e.clientName}`, 'success');
+      renderFollowups();
+      updateKPIs();
+      destroyCharts(); setTimeout(initCharts, 100);
+    }
+
+    function markEscalated(id) {
+      const e = DB.entries.find(x => x.id === id);
+      if (!e) return;
+      e.followUpStatus = 'Escalated';
+      e.updatedAt = Date.now();
+      save();
+      logActivity('orange', `Follow-up escalated: <strong>${e.clientName}</strong>`, e.projectName);
+      showToast(`Escalated — ${e.clientName}`, 'warn');
+      renderFollowups();
+      updateKPIs();
+    }
+
+    function markOrderDone(id) {
+      const e = DB.entries.find(x => x.id === id);
+      if (!e) return;
+      e.orderStatus = 'Completed';
+      e.updatedAt = Date.now();
+      save();
+      logActivity('green', `Order completed: <strong>${e.clientName}</strong>`, e.projectName);
+      showToast(`Order marked completed — ${e.clientName}`, 'success');
+      filterOrders();
+      updateKPIs();
+      destroyCharts(); setTimeout(initCharts, 100);
+    }
+
+    function markDispatched(id) {
+      const e = DB.entries.find(x => x.id === id);
+      if (!e) return;
+      e.dispatchStatus = 'Completed';
+      e.updatedAt = Date.now();
+      save();
+      logActivity('teal', `Dispatch completed: <strong>${e.clientName}</strong>`, e.projectName);
+      showToast(`Dispatched — ${e.clientName}`, 'success');
+      filterDispatch();
+      renderDispatch();
+      updateKPIs();
+      destroyCharts(); setTimeout(initCharts, 100);
+    }
+
+    // ========================
+    // INIT
+    // ========================
+    window.addEventListener('DOMContentLoaded', () => {
+      updateKPIs();
+      renderDashboard();
+      initCharts();
+      renderReminders();
+      checkReminders();
+      // Auto-save indicator
+      setInterval(() => { save(); }, 30000);
+    });
+  </script>
+</body>

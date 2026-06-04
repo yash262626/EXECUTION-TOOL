@@ -1,0 +1,46 @@
+Date,Client Name,Project Name,Order Status,Dispatch Status,Priority,Follow-up Status,Expected Delivery,Factory Update,Remarks
+2026-05-29,Shapoorji,LT Panel Installation,Completed,Completed,Low,Done,2026-06-05,Material dispatched from factory,Delivered on schedule
+2026-05-29,Mahindra Realty,Armoured Cable,Pending,Pending,Medium,Done,2026-06-06,Material dispatched from factory,As per plan
+2026-05-29,Shapoorji,Earthing System,In Progress,Partial,High,Pending,2026-06-07,Production in progress,As per plan
+2026-05-29,Mahindra Realty,Cable Tray Works,Delayed,In Transit,Urgent,Pending,2026-06-08,Awaiting clearance,Client follow-up pending
+2026-05-30,Mahindra Realty,Control Cable Lot,Completed,Completed,Low,Done,2026-06-06,Material dispatched from factory,Delivered on schedule
+2026-05-30,Shapoorji,HT Cable Supply,Completed,Completed,Medium,Done,2026-06-07,Material dispatched from factory,Delivered on schedule
+2026-05-30,Mahindra Realty,Substation Wiring,In Progress,Partial,High,Done,2026-06-08,Material dispatched from factory,As per plan
+2026-05-30,Shapoorji,Power Cable Ph2,Delayed,In Transit,Urgent,Done,2026-06-09,Material dispatched from factory,Client follow-up pending
+2026-05-30,Mahindra Realty,LT Panel Installation,In Progress,Partial,Low,Escalated,2026-06-10,Production in progress,As per plan
+2026-05-30,Shapoorji,Armoured Cable,Pending,Pending,Medium,Pending,2026-06-11,Awaiting clearance,As per plan
+2026-05-31,L&T Construction,Substation Wiring,Completed,Completed,Low,Done,2026-06-07,Material dispatched from factory,Delivered on schedule
+2026-05-31,Prestige Group,Power Cable Ph2,Completed,Completed,Medium,Done,2026-06-08,Material dispatched from factory,Delivered on schedule
+2026-05-31,L&T Construction,LT Panel Installation,Completed,Completed,High,Done,2026-06-09,Material dispatched from factory,Delivered on schedule
+2026-05-31,Prestige Group,Armoured Cable,Delayed,In Transit,Urgent,Pending,2026-06-10,Awaiting clearance,Client follow-up pending
+2026-05-31,L&T Construction,Earthing System,In Progress,Partial,Low,Escalated,2026-06-11,Production in progress,As per plan
+2026-06-01,Tata Projects,HT Cable Supply,Completed,Completed,Low,Done,2026-06-08,Material dispatched from factory,Delivered on schedule
+2026-06-01,Godrej Properties,Substation Wiring,Completed,Completed,Medium,Done,2026-06-09,Material dispatched from factory,Delivered on schedule
+2026-06-01,Tata Projects,Power Cable Ph2,Completed,Completed,High,Done,2026-06-10,Material dispatched from factory,Delivered on schedule
+2026-06-01,Godrej Properties,LT Panel Installation,Completed,Completed,Urgent,Done,2026-06-11,Material dispatched from factory,Delivered on schedule
+2026-06-01,Tata Projects,Armoured Cable,In Progress,Partial,Low,Done,2026-06-12,Material dispatched from factory,As per plan
+2026-06-01,Godrej Properties,Earthing System,Pending,Pending,Medium,Done,2026-06-13,Material dispatched from factory,As per plan
+2026-06-01,Tata Projects,Cable Tray Works,Delayed,In Transit,High,Pending,2026-06-14,Production in progress,Client follow-up pending
+2026-06-01,Godrej Properties,Control Cable Lot,Pending,Pending,Urgent,Pending,2026-06-15,Awaiting clearance,As per plan
+2026-06-02,Tata Projects,HT Cable Supply,Completed,Completed,Low,Done,2026-06-09,Material dispatched from factory,Delivered on schedule
+2026-06-02,Godrej Properties,Substation Wiring,Completed,Completed,Medium,Done,2026-06-10,Material dispatched from factory,Delivered on schedule
+2026-06-02,Tata Projects,Power Cable Ph2,Completed,Completed,High,Done,2026-06-11,Material dispatched from factory,Delivered on schedule
+2026-06-02,Godrej Properties,LT Panel Installation,Delayed,In Transit,Urgent,Done,2026-06-12,Material dispatched from factory,Client follow-up pending
+2026-06-02,Tata Projects,Armoured Cable,In Progress,Partial,Low,Done,2026-06-13,Material dispatched from factory,As per plan
+2026-06-02,Godrej Properties,Earthing System,Pending,Pending,Medium,Pending,2026-06-14,Awaiting clearance,As per plan
+2026-06-02,Tata Projects,Cable Tray Works,Delayed,In Transit,High,Pending,2026-06-15,Production in progress,Client follow-up pending
+2026-06-03,Prestige Group,Earthing System,Completed,Completed,Low,Done,2026-06-10,Material dispatched from factory,Delivered on schedule
+2026-06-03,L&T Construction,Cable Tray Works,Completed,Completed,Medium,Done,2026-06-11,Material dispatched from factory,Delivered on schedule
+2026-06-03,Prestige Group,Control Cable Lot,Completed,Completed,High,Done,2026-06-12,Material dispatched from factory,Delivered on schedule
+2026-06-03,L&T Construction,HT Cable Supply,Completed,Completed,Urgent,Done,2026-06-13,Material dispatched from factory,Delivered on schedule
+2026-06-03,Prestige Group,Substation Wiring,Completed,Completed,Low,Done,2026-06-14,Material dispatched from factory,Delivered on schedule
+2026-06-03,L&T Construction,Power Cable Ph2,Pending,Pending,Medium,Done,2026-06-15,Material dispatched from factory,As per plan
+2026-06-03,Prestige Group,LT Panel Installation,Delayed,In Transit,High,Done,2026-06-16,Material dispatched from factory,Client follow-up pending
+2026-06-03,L&T Construction,Armoured Cable,Pending,Pending,Urgent,Pending,2026-06-17,Awaiting clearance,As per plan
+2026-06-03,Prestige Group,Earthing System,In Progress,Partial,Low,Escalated,2026-06-18,Production in progress,As per plan
+2026-06-04,Tata Projects,HT Cable Supply,Completed,Completed,Low,Done,2026-06-11,Material dispatched from factory,Delivered on schedule
+2026-06-04,Godrej Properties,Substation Wiring,Completed,Completed,Medium,Done,2026-06-12,Material dispatched from factory,Delivered on schedule
+2026-06-04,Tata Projects,Power Cable Ph2,In Progress,Partial,High,Done,2026-06-13,Material dispatched from factory,As per plan
+2026-06-04,Godrej Properties,LT Panel Installation,Delayed,In Transit,Urgent,Done,2026-06-14,Material dispatched from factory,Client follow-up pending
+2026-06-04,Tata Projects,Armoured Cable,In Progress,Partial,Low,Escalated,2026-06-15,Production in progress,As per plan
+2026-06-04,Godrej Properties,Earthing System,Pending,Pending,Medium,Pending,2026-06-16,Awaiting clearance,As per plan
