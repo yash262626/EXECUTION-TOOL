@@ -71,6 +71,10 @@ EXECUTION-TOOL/
 
 ---
 
+## 📄 License
+
+This project is source-available under the [Yash AIL Source-Available License](LICENSE): you may view, copy and modify it for personal, educational and non-commercial local use. **Deploying/hosting it online and selling it are not allowed.**
+
 <div align="center">
 
 Built by [Yash Dhanraj Ail](https://github.com/yash262626) · [Portfolio](https://yashail.netlify.app)
