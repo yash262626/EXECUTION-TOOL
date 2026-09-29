@@ -9,6 +9,8 @@
 ![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
 ![Excel](https://img.shields.io/badge/Excel_Import%2FExport-217346?style=for-the-badge&logo=microsoftexcel&logoColor=white)
 
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Open_Dashboard-00C7B7?style=for-the-badge)](https://yash262626.github.io/EXECUTION-TOOL/)
+
 </div>
 
 ---
@@ -30,9 +32,8 @@ Sales teams often track orders, factory updates and follow-ups across scattered 
 
 ## 🚀 Quick Start
 
-1. Download or clone the repo.
-2. Open the dashboard HTML file in any modern browser.
-3. Import `kei_sample_data (2).csv` to see it in action, or import your own sheet.
+1. Open the **[live dashboard](https://yash262626.github.io/EXECUTION-TOOL/)**, or clone the repo and open `index.html` in any modern browser.
+2. Import `kei_sample_data (2).csv` to see it in action, or import your own sheet.
 
 ## 🧾 Data Format
 
@@ -57,14 +58,14 @@ The import expects these columns:
 
 ```
 EXECUTION-TOOL/
-├── kei_dashboard_fixed__4_ (1).html   # The dashboard (single file)
-├── kei_sample_data (2).csv            # Sample dataset
+├── index.html                        # The dashboard (single file)
+├── kei_sample_data (2).csv           # Sample dataset
 └── README.md
 ```
 
 ## 🛣️ Roadmap
 
-- [ ] Rename the HTML file to `index.html` and host on GitHub Pages
+- [x] Hosted on GitHub Pages
 - [ ] Add screenshots of each dashboard view
 - [ ] Export a formatted daily report
 
